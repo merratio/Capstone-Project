@@ -2,39 +2,36 @@ package util;
 
 import entity.Patient;
 
+import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
-
+import java.security.NoSuchAlgorithmException;
+import java.util.HexFormat;
 
 public class HashUtil {
+
+    private HashUtil() {} // utility class — prevent instantiation
 
     public static String generateHash(Patient patient) {
         try {
             MessageDigest digest = MessageDigest.getInstance("SHA-256");
 
-            String data = patient.getId() +
-                    patient.getName() +
-                    patient.getDiagnosis();
+            // Delimited to prevent collision between different field splits
+            // e.g. id="AB", name="C" vs id="A", name="BC" → now distinct
+            // lastUpdated included so timestamp changes are detected
+            String data = String.join("|",
+                    patient.getId(),
+                    patient.getName(),
+                    patient.getDiagnosis(),
+                    patient.getLastUpdated().toString()
+            );
 
-            byte[] hashBytes = digest.digest(data.getBytes());
+            byte[] hashBytes = digest.digest(data.getBytes(StandardCharsets.UTF_8));
 
-            return bytesToHex(hashBytes);
+            return HexFormat.of().formatHex(hashBytes);
 
-        } catch (Exception e) {
-            throw new RuntimeException(e);
+        } catch (NoSuchAlgorithmException e) {
+            // SHA-256 is guaranteed by the JCA spec — this cannot happen
+            throw new IllegalStateException("SHA-256 algorithm not available", e);
         }
-    }
-
-    private static String bytesToHex(byte[] bytes) {
-        StringBuilder hexString = new StringBuilder(2 * bytes.length);
-
-        for (byte b : bytes) {
-            String hex = Integer.toHexString(0xff & b);
-            if (hex.length() == 1) {
-                hexString.append('0');
-            }
-            hexString.append(hex);
-        }
-
-        return hexString.toString();
     }
 }

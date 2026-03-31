@@ -1,56 +1,49 @@
 package entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-
+import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
+@Table(name = "patients")
 public class Patient {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
 
+    @Column(nullable = false)
     private String name;
+
+    @Column(nullable = false)
     private String diagnosis;
+
+    @Column(nullable = false)
     private LocalDateTime lastUpdated;
 
-    public Patient(String diagnosis, String id, LocalDateTime lastUpdated, String name) {
-        this.diagnosis = diagnosis;
+    // Required by JPA
+    protected Patient() {
+        this.id = "";
+        this.name = "";
+        this.diagnosis = "";
+        this.lastUpdated = localDateTime.now();
+    }
+
+    public Patient(String id, String name, String diagnosis, LocalDateTime lastUpdated) {
         this.id = id;
-        this.lastUpdated = lastUpdated;
         this.name = name;
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public String getDiagnosis() {
-        return diagnosis;
-    }
-
-    public void setDiagnosis(String diagnosis) {
         this.diagnosis = diagnosis;
-    }
-
-    public LocalDateTime getLastUpdated() {
-        return lastUpdated;
-    }
-
-    public void setLastUpdated(LocalDateTime lastUpdated) {
         this.lastUpdated = lastUpdated;
     }
 
-    public String getName() {
-        return name;
-    }
+    public String getId() { return id; }
+    public void setId(String id) { this.id = id; }
 
-    public void setName(String name) {
-        this.name = name;
-    }
+    public String getName() { return name; }
+    public void setName(String name) { this.name = name; }
+
+    public String getDiagnosis() { return diagnosis; }
+    public void setDiagnosis(String diagnosis) { this.diagnosis = diagnosis; }
+
+    public LocalDateTime getLastUpdated() { return lastUpdated; }
+    public void setLastUpdated(LocalDateTime lastUpdated) { this.lastUpdated = lastUpdated; }
 }

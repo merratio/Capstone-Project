@@ -1,5 +1,6 @@
 package blockchain;
 
+import exception.BlockchainException;
 import org.hyperledger.fabric.gateway.Contract;
 import org.springframework.stereotype.Component;
 
@@ -12,11 +13,12 @@ public class FabricClient {
         this.contract = contract;
     }
 
-    public void submit(String function, String... args) {
+    public byte[] submit(String function, String... args) {
         try {
-            contract.submitTransaction(function, args);
+            return contract.submitTransaction(function, args);
         } catch (Exception e) {
-            throw new RuntimeException("Blockchain error", e);
+            throw new BlockchainException(
+                    "Failed to submit transaction for function: " + function, e);
         }
     }
 
@@ -24,7 +26,8 @@ public class FabricClient {
         try {
             return new String(contract.evaluateTransaction(function, args));
         } catch (Exception e) {
-            throw new RuntimeException("Blockchain error", e);
+            throw new BlockchainException(
+                    "Failed to evaluate transaction for function: " + function, e);
         }
     }
 }

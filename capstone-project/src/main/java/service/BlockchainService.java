@@ -1,5 +1,6 @@
 package service;
 
+import blockchain.FabricClient;
 import org.springframework.stereotype.Service;
 
 @Service

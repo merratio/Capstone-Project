@@ -1,4 +1,4 @@
-package entity;
+package com.mp.capstone.project.entity;
 
 import jakarta.persistence.*;
 import java.time.LocalDateTime;

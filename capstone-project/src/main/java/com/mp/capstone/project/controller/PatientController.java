@@ -1,13 +1,15 @@
-package controller;
+package com.mp.capstone.project.controller;
 
-import dto.PatientDto;
-import exception.ResourceNotFoundException;
+import com.mp.capstone.project.exception.BlockchainException;
+import com.mp.capstone.project.exception.DataIntegrityException;
+import com.mp.capstone.project.dto.PatientDto;
+import com.mp.capstone.project.exception.ResourceNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import service.PatientService;
+import com.mp.capstone.project.service.PatientService;
 
 import jakarta.validation.Valid;
 import java.time.Instant;
@@ -87,8 +89,8 @@ public class PatientController {
                 .body(new ErrorResponse(HttpStatus.BAD_REQUEST.value(), "Validation failed", errors));
     }
 
-    @ExceptionHandler(exception.DataIntegrityException.class)
-    public ResponseEntity<ErrorResponse> handleIntegrityViolation(exception.DataIntegrityException e) {
+    @ExceptionHandler(DataIntegrityException.class)
+    public ResponseEntity<ErrorResponse> handleIntegrityViolation(DataIntegrityException e) {
         log.error("Data integrity violation: {}", e.getMessage());
         return ResponseEntity
                 .status(HttpStatus.CONFLICT)
@@ -97,8 +99,8 @@ public class PatientController {
                         null));
     }
 
-    @ExceptionHandler(exception.BlockchainException.class)
-    public ResponseEntity<ErrorResponse> handleBlockchain(exception.BlockchainException e) {
+    @ExceptionHandler(BlockchainException.class)
+    public ResponseEntity<ErrorResponse> handleBlockchain(BlockchainException e) {
         log.error("Blockchain error during patient operation", e);
         return ResponseEntity
                 .status(HttpStatus.BAD_GATEWAY)

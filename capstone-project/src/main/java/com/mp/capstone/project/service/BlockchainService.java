@@ -1,6 +1,6 @@
-package service;
+package com.mp.capstone.project.service;
 
-import blockchain.FabricClient;
+import com.mp.capstone.project.blockchain.FabricClient;
 import org.springframework.stereotype.Service;
 
 @Service

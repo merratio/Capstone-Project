@@ -1,13 +1,13 @@
-package service;
+package com.mp.capstone.project.service;
 
-import dto.PatientDto;
-import entity.Patient;
-import exception.DataIntegrityException;
-import exception.ResourceNotFoundException;
+import com.mp.capstone.project.dto.PatientDto;
+import com.mp.capstone.project.entity.Patient;
+import com.mp.capstone.project.exception.DataIntegrityException;
+import com.mp.capstone.project.exception.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import repository.PatientRepository;
-import util.HashUtil;
+import com.mp.capstone.project.repository.PatientRepository;
+import com.mp.capstone.project.util.HashUtil;
 
 import java.time.LocalDateTime;
 import java.util.List;

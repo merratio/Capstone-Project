@@ -1,4 +1,4 @@
-package exception;
+package com.mp.capstone.project.exception;
 
 public class BlockchainException extends RuntimeException {
 

@@ -1,4 +1,4 @@
-package dto;
+package com.mp.capstone.project.dto;
 
 import jakarta.validation.constraints.NotBlank;
 

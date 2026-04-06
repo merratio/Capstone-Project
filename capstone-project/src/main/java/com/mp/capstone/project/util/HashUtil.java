@@ -1,6 +1,6 @@
-package util;
+package com.mp.capstone.project.util;
 
-import entity.Patient;
+import com.mp.capstone.project.entity.Patient;
 
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;

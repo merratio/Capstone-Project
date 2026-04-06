@@ -25,12 +25,14 @@ public class PatientService {
     }
 
     @Transactional
-    public void createPatient(PatientDto dto) {
+    public String createPatient(PatientDto dto) {
         Patient patient = map(dto);
         repo.save(patient);
 
         String hash = HashUtil.generateHash(patient);
         blockchainService.storeHash(patient.getId(), hash);
+
+        return patient.getId();
     }
 
     @Transactional

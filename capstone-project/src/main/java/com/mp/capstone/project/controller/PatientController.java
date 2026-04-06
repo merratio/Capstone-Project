@@ -14,6 +14,7 @@ import com.mp.capstone.project.service.PatientService;
 import jakarta.validation.Valid;
 import java.time.Instant;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/patients")
@@ -30,10 +31,13 @@ public class PatientController {
     // ─── Create ────────────────────────────────────────────────────────────────
 
     @PostMapping
-    public ResponseEntity<Void> createPatient(@Valid @RequestBody PatientDto dto) {
-        log.info("Creating patient with id: {}", dto.getId());
-        patientService.createPatient(dto);
-        return ResponseEntity.status(HttpStatus.CREATED).build();
+    public ResponseEntity<Map<String, String>> createPatient(@Valid @RequestBody PatientDto dto) {
+        log.info("Received request to create patient");
+        String generated = patientService.createPatient(dto);
+
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(Map.of("id", generated));
     }
 
     // ─── Read ──────────────────────────────────────────────────────────────────

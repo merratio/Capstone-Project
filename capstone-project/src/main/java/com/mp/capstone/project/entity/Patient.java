@@ -25,7 +25,7 @@ public class Patient {
         this.id = "";
         this.name = "";
         this.diagnosis = "";
-        this.lastUpdated = localDateTime.now();
+        this.lastUpdated = LocalDateTime.now();
     }
 
     public Patient(String id, String name, String diagnosis, LocalDateTime lastUpdated) {

@@ -4,7 +4,6 @@ import jakarta.validation.constraints.NotBlank;
 
 public class PatientDto {
 
-    @NotBlank(message = "ID must not be blank")
     private String id;
 
     @NotBlank(message = "Name must not be blank")

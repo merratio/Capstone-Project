@@ -72,13 +72,13 @@ public class FabricGatewayConfig {
                 .signer(newSigner())
                 .hash(Hash.SHA256)
                 .connection(grpcChannel)
-                .evaluateOptions(options -> options.withDeadlineAfter(5, TimeUnit.SECONDS))
-                .endorseOptions(options -> options.withDeadlineAfter(15, TimeUnit.SECONDS))
-                .submitOptions(options -> options.withDeadlineAfter(5, TimeUnit.SECONDS))
-                .commitStatusOptions(options -> options.withDeadlineAfter(1, TimeUnit.MINUTES))
+                .evaluateOptions(options -> options.withDeadlineAfter(30, TimeUnit.SECONDS))
+                .endorseOptions(options -> options.withDeadlineAfter(60, TimeUnit.SECONDS))
+                .submitOptions(options -> options.withDeadlineAfter(60, TimeUnit.SECONDS))
+                .commitStatusOptions(options -> options.withDeadlineAfter(2, TimeUnit.MINUTES))
                 .connect();
     }
-
+    
     @Lazy
     @Bean
     public Network network(Gateway gateway) {

@@ -11,6 +11,7 @@ import com.mp.capstone.project.util.HashUtil;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class PatientService {
@@ -26,13 +27,33 @@ public class PatientService {
 
     @Transactional
     public String createPatient(PatientDto dto) {
-        Patient patient = map(dto);
+        // Generate ID first (if not provided in DTO)
+        String patientId = (dto.getId() == null || dto.getId().isEmpty())
+                ? generatePatientId()
+                : dto.getId();
+
+        // Create patient with ID
+        Patient patient = new Patient(
+                patientId,
+                dto.getName(),
+                dto.getDiagnosis(),
+                LocalDateTime.now()
+        );
+
+        // Generate hash before saving to DB
+        String hash = HashUtil.generateHash(patient);
+
+        // Store on blockchain FIRST (optional, can be after DB)
+        try {
+            blockchainService.storeHash(patientId, hash);
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to store hash on blockchain: " + e.getMessage(), e);
+        }
+
+        // Save to database
         repo.save(patient);
 
-        String hash = HashUtil.generateHash(patient);
-        blockchainService.storeHash(patient.getId(), hash);
-
-        return patient.getId();
+        return patientId;
     }
 
     @Transactional
@@ -44,10 +65,18 @@ public class PatientService {
         patient.setDiagnosis(dto.getDiagnosis());
         patient.setLastUpdated(LocalDateTime.now());
 
-        repo.save(patient);
+        // Generate new hash with updated data
+        String newHash = HashUtil.generateHash(patient);
 
-        String hash = HashUtil.generateHash(patient);
-        blockchainService.updateHash(id, hash);
+        // Update on blockchain first
+        try {
+            blockchainService.updateHash(id, newHash);
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to update hash on blockchain: " + e.getMessage(), e);
+        }
+
+        // Then save to database
+        repo.save(patient);
     }
 
     @Transactional(readOnly = true)
@@ -68,20 +97,49 @@ public class PatientService {
                 .toList();
     }
 
-    private void verifyIntegrity(Patient patient) {
-        String dbHash = HashUtil.generateHash(patient);
-        String chainHash = blockchainService.getHash(patient.getId());
+    @Transactional
+    public void deletePatient(String id) {
+        // Check if patient exists
+        if (!repo.existsById(id)) {
+            throw new ResourceNotFoundException("Patient not found: " + id);
+        }
 
-        if (!dbHash.equals(chainHash)) {
+        // Delete from blockchain
+        try {
+            blockchainService.deleteHash(id);
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to delete hash from blockchain: " + e.getMessage(), e);
+        }
+
+        // Delete from database
+        repo.deleteById(id);
+    }
+
+    private void verifyIntegrity(Patient patient) {
+        try {
+            String dbHash = HashUtil.generateHash(patient);
+            String chainHash = blockchainService.getHash(patient.getId());
+
+            if (!dbHash.equals(chainHash)) {
+                throw new DataIntegrityException(
+                        "Integrity check failed for patient: " + patient.getId()
+                                + " — database record does not match blockchain hash. "
+                                + "DB Hash: " + dbHash + ", Blockchain Hash: " + chainHash);
+            }
+        } catch (Exception e) {
             throw new DataIntegrityException(
-                    "Integrity check failed for patient: " + patient.getId()
-                            + " — database record does not match blockchain hash");
+                    "Failed to verify integrity for patient: " + patient.getId()
+                            + " - " + e.getMessage(), e);
         }
     }
 
     private Patient map(PatientDto dto) {
+        String id = (dto.getId() == null || dto.getId().isEmpty())
+                ? generatePatientId()
+                : dto.getId();
+
         return new Patient(
-                dto.getId(),
+                id,
                 dto.getName(),
                 dto.getDiagnosis(),
                 LocalDateTime.now()
@@ -94,5 +152,9 @@ public class PatientService {
                 patient.getName(),
                 patient.getDiagnosis()
         );
+    }
+
+    private String generatePatientId() {
+        return "PAT-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase();
     }
 }

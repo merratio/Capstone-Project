@@ -26,36 +26,30 @@ public class MedicalRecordService {
     }
 
     @Transactional
-    public String createPatient(PatientDto dto) {
-        // Generate ID first (if not provided in DTO)
-        String patientId = (dto.getId() == null || dto.getId().isEmpty())
-                ? generatePatientId()
-                : dto.getId();
+    public String createMedicalRecord(MedicalRecord record) {
+        String recordId = (record.getId() == null || record.getId().isEmpty())
+                ? generateRecordId()
+                : record.getId();
 
-        // Create patient with ID
-        MedicalRecord patient = new MedicalRecord(
-                patientId,
-                dto.getName(),
-                dto.getDiagnosis(),
-                LocalDateTime.now()
-        );
+        record.setId(recordId);
 
         // Generate hash before saving to DB
-        String hash = HashUtil.generateHash(patient);
+        String hash = HashUtil.generateHash(record);
 
         // Store on blockchain FIRST (optional, can be after DB)
         try {
-            blockchainService.storeHash(patientId, hash);
+            blockchainService.storeHash(recordId, hash);
         } catch (Exception e) {
             throw new RuntimeException("Failed to store hash on blockchain: " + e.getMessage(), e);
         }
 
         // Save to database
-        repo.save(patient);
+        repo.save(record);
 
-        return patientId;
+        return recordId;
     }
 
+    /*
     @Transactional
     public void updatePatient(String id, PatientDto dto) {
         MedicalRecord patient = repo.findById(id)
@@ -77,31 +71,30 @@ public class MedicalRecordService {
 
         // Then save to database
         repo.save(patient);
+    }*/
+
+    @Transactional(readOnly = true)
+    public MedicalRecord getRecord(String id) {
+        MedicalRecord record = repo.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Record not found: " + id));
+
+        verifyIntegrity(record);
+
+        return record;
     }
 
     @Transactional(readOnly = true)
-    public PatientDto getPatient(String id) {
-        MedicalRecord patient = repo.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Patient not found: " + id));
-
-        verifyIntegrity(patient);
-
-        return toDto(patient);
-    }
-
-    @Transactional(readOnly = true)
-    public List<PatientDto> getAllPatients() {
+    public List<MedicalRecord> getAllRecords() {
         return repo.findAll()
                 .stream()
-                .map(this::toDto)
                 .toList();
     }
 
     @Transactional
-    public void deletePatient(String id) {
+    public void deleteRecord(String id) {
         // Check if patient exists
         if (!repo.existsById(id)) {
-            throw new ResourceNotFoundException("Patient not found: " + id);
+            throw new ResourceNotFoundException("Record not found: " + id);
         }
 
         // Delete from blockchain
@@ -115,46 +108,26 @@ public class MedicalRecordService {
         repo.deleteById(id);
     }
 
-    private void verifyIntegrity(MedicalRecord patient) {
+    private void verifyIntegrity(MedicalRecord record) {
         try {
-            String dbHash = HashUtil.generateHash(patient);
-            String chainHash = blockchainService.getHash(patient.getId());
+            String dbHash = HashUtil.generateHash(record);
+            String chainHash = blockchainService.getHash(record.getId());
 
             if (!dbHash.equals(chainHash)) {
                 throw new DataIntegrityException(
-                        "Integrity check failed for patient: " + patient.getId()
+                        "Integrity check failed for record: " + record.getId()
                                 + " — database record does not match blockchain hash. "
                                 + "DB Hash: " + dbHash + ", Blockchain Hash: " + chainHash);
             }
         } catch (Exception e) {
             throw new DataIntegrityException(
-                    "Failed to verify integrity for patient: " + patient.getId()
+                    "Failed to verify integrity for record: " + record.getId()
                             + " - " + e.getMessage(), e);
         }
     }
 
-    private MedicalRecord map(PatientDto dto) {
-        String id = (dto.getId() == null || dto.getId().isEmpty())
-                ? generatePatientId()
-                : dto.getId();
 
-        return new MedicalRecord(
-                id,
-                dto.getName(),
-                dto.getDiagnosis(),
-                LocalDateTime.now()
-        );
-    }
-
-    private PatientDto toDto(MedicalRecord patient) {
-        return new PatientDto(
-                patient.getId(),
-                patient.getName(),
-                patient.getDiagnosis()
-        );
-    }
-
-    private String generatePatientId() {
-        return "PAT-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase();
+    private String generateRecordId() {
+        return "REC-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase();
     }
 }

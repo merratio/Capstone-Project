@@ -16,48 +16,48 @@ public class BlockchainService {
         this.fabricClient = fabricClient;
     }
 
-    public void storeHash(String patientId, String hash) {
+    public void storeHash(String recordId, String hash) {
         try {
-            logger.info("Storing hash on blockchain for patient: {}", patientId);
-            fabricClient.submit("storeHash", patientId, hash);
-            logger.info("Hash stored successfully for patient: {}", patientId);
+            logger.info("Storing hash on blockchain for record: {}", recordId);
+            fabricClient.submit("storeHash", recordId, hash);
+            logger.info("Hash stored successfully for record: {}", recordId);
         } catch (Exception e) {
-            logger.error("Failed to store hash for patient: {}", patientId, e);
-            throw new BlockchainException("Failed to store hash for patient: " + patientId, e);
+            logger.error("Failed to store hash for record: {}", recordId, e);
+            throw new BlockchainException("Failed to store hash for record: " + recordId, e);
         }
     }
 
-    public void updateHash(String patientId, String hash) {
+    public void updateHash(String recordId, String hash) {
         try {
-            logger.info("Updating hash on blockchain for patient: {}", patientId);
-            fabricClient.submit("updateHash", patientId, hash);
-            logger.info("Hash updated successfully for patient: {}", patientId);
+            logger.info("Updating hash on blockchain for record: {}", recordId);
+            fabricClient.submit("updateHash", recordId, hash);
+            logger.info("Hash updated successfully for record: {}", recordId);
         } catch (Exception e) {
-            logger.error("Failed to update hash for patient: {}", patientId, e);
-            throw new BlockchainException("Failed to update hash for patient: " + patientId, e);
+            logger.error("Failed to update hash for record: {}", recordId, e);
+            throw new BlockchainException("Failed to update hash for record: " + recordId, e);
         }
     }
 
-    public String getHash(String patientId) {
+    public String getHash(String recordId) {
         try {
-            logger.info("Getting hash from blockchain for patient: {}", patientId);
-            String hash = fabricClient.evaluate("getHash", patientId);
-            logger.info("Hash retrieved successfully for patient: {}", patientId);
+            logger.info("Getting hash from blockchain for record: {}", recordId);
+            String hash = fabricClient.evaluate("getHash", recordId);
+            logger.info("Hash retrieved successfully for record: {}", recordId);
             return hash;
         } catch (Exception e) {
-            logger.error("Failed to get hash for patient: {}", patientId, e);
-            throw new BlockchainException("Failed to get hash for patient: " + patientId, e);
+            logger.error("Failed to get hash for record: {}", recordId, e);
+            throw new BlockchainException("Failed to get hash for record: " + recordId, e);
         }
     }
 
-    public void deleteHash(String patientId) {
+    public void deleteHash(String recordId) {
         try {
-            logger.info("Deleting hash from blockchain for patient: {}", patientId);
-            fabricClient.submit("deleteHash", patientId);
-            logger.info("Hash deleted successfully for patient: {}", patientId);
+            logger.info("Deleting hash from blockchain for record: {}", recordId);
+            fabricClient.submit("deleteHash", recordId);
+            logger.info("Hash deleted successfully for record: {}", recordId);
         } catch (Exception e) {
-            logger.error("Failed to delete hash for patient: {}", patientId, e);
-            throw new BlockchainException("Failed to delete hash for patient: " + patientId, e);
+            logger.error("Failed to delete hash for record: {}", recordId, e);
+            throw new BlockchainException("Failed to delete hash for record: " + recordId, e);
         }
     }
 }

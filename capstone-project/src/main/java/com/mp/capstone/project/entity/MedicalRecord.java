@@ -2,48 +2,122 @@ package com.mp.capstone.project.entity;
 
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
+import java.util.Date;
 
 @Entity
 @Table(name = "medical_records")
 public class MedicalRecord {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(nullable = false)
     private String id;
 
     @Column(nullable = false)
-    private String name;
+    private String conditionName;
 
     @Column(nullable = false)
-    private String diagnosis;
+    private String status;
+
+    @Column(nullable = false)
+    private Date diagnosisDate;
+
+    @Column(nullable = false)
+    private Boolean hereditary;
+
+    @ManyToOne // Defines the relationship
+    @JoinColumn(name = "accessed_by") // Points to the foreign key column
+    private Employee emp;
+
+    @ManyToOne // Defines the relationship
+    @JoinColumn(name = "patient_id") // Points to the foreign key column
+    private Patient pat;
 
     @Column(nullable = false)
     private LocalDateTime lastUpdated;
 
-    // Required by JPA
-    protected MedicalRecord() {
+    public MedicalRecord() {
+        this.conditionName = "";
+        this.diagnosisDate = new Date();
+        this.emp = new Employee();
+        this.hereditary = false;
         this.id = "";
-        this.name = "";
-        this.diagnosis = "";
         this.lastUpdated = LocalDateTime.now();
+        this.pat = new Patient();
+        this.status = "";
     }
 
-    public MedicalRecord(String id, String name, String diagnosis, LocalDateTime lastUpdated) {
+    public MedicalRecord(String conditionName, Date diagnosisDate, Employee emp, Boolean hereditary, String id, LocalDateTime lastUpdated, Patient pat, String status) {
+        this.conditionName = conditionName;
+        this.diagnosisDate = diagnosisDate;
+        this.emp = emp;
+        this.hereditary = hereditary;
         this.id = id;
-        this.name = name;
-        this.diagnosis = diagnosis;
+        this.lastUpdated = lastUpdated;
+        this.pat = pat;
+        this.status = status;
+    }
+
+    public String getConditionName() {
+        return conditionName;
+    }
+
+    public void setConditionName(String conditionName) {
+        this.conditionName = conditionName;
+    }
+
+    public Date getDiagnosisDate() {
+        return diagnosisDate;
+    }
+
+    public void setDiagnosisDate(Date diagnosisDate) {
+        this.diagnosisDate = diagnosisDate;
+    }
+
+    public Employee getEmp() {
+        return emp;
+    }
+
+    public void setEmp(Employee emp) {
+        this.emp = emp;
+    }
+
+    public Boolean getHereditary() {
+        return hereditary;
+    }
+
+    public void setHereditary(Boolean hereditary) {
+        this.hereditary = hereditary;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public LocalDateTime getLastUpdated() {
+        return lastUpdated;
+    }
+
+    public void setLastUpdated(LocalDateTime lastUpdated) {
         this.lastUpdated = lastUpdated;
     }
 
-    public String getId() { return id; }
-    public void setId(String id) { this.id = id; }
+    public Patient getPat() {
+        return pat;
+    }
 
-    public String getName() { return name; }
-    public void setName(String name) { this.name = name; }
+    public void setPat(Patient pat) {
+        this.pat = pat;
+    }
 
-    public String getDiagnosis() { return diagnosis; }
-    public void setDiagnosis(String diagnosis) { this.diagnosis = diagnosis; }
+    public String getStatus() {
+        return status;
+    }
 
-    public LocalDateTime getLastUpdated() { return lastUpdated; }
-    public void setLastUpdated(LocalDateTime lastUpdated) { this.lastUpdated = lastUpdated; }
+    public void setStatus(String status) {
+        this.status = status;
+    }
 }

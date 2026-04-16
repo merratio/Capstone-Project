@@ -1,5 +1,6 @@
 package com.mp.capstone.project.controller;
 
+import com.mp.capstone.project.entity.MedicalRecord;
 import com.mp.capstone.project.exception.BlockchainException;
 import com.mp.capstone.project.exception.DataIntegrityException;
 import com.mp.capstone.project.dto.PatientDto;
@@ -31,9 +32,9 @@ public class MedicalRecordController {
     // ─── Create ────────────────────────────────────────────────────────────────
 
     @PostMapping
-    public ResponseEntity<Map<String, String>> createPatient(@Valid @RequestBody PatientDto dto) {
+    public ResponseEntity<Map<String, String>> createPatient(@Valid @RequestBody MedicalRecord record) {
         log.info("Received request to create patient");
-        String generated = medicalRecordService.createPatient(dto);
+        String generated = medicalRecordService.createMedicalRecord(record);
 
         return ResponseEntity
                 .status(HttpStatus.CREATED)
@@ -43,29 +44,29 @@ public class MedicalRecordController {
     // ─── Read ──────────────────────────────────────────────────────────────────
 
     @GetMapping("/{id}")
-    public ResponseEntity<PatientDto> getPatient(@PathVariable String id) {
-        log.info("Fetching patient with id: {}", id);
-        PatientDto patient = medicalRecordService.getPatient(id);
-        return ResponseEntity.ok(patient);
+    public ResponseEntity<MedicalRecord> getPatient(@PathVariable String id) {
+        log.info("Fetching record with id: {}", id);
+        MedicalRecord record = medicalRecordService.getRecord(id);
+        return ResponseEntity.ok(record);
     }
 
     @GetMapping
-    public ResponseEntity<List<PatientDto>> getAllPatients() {
-        log.info("Fetching all patients");
-        List<PatientDto> patients = medicalRecordService.getAllPatients();
-        return ResponseEntity.ok(patients);
+    public ResponseEntity<List<MedicalRecord>> getAllPatients() {
+        log.info("Fetching all records");
+        List<MedicalRecord> records = medicalRecordService.getAllRecords();
+        return ResponseEntity.ok(records);
     }
 
     // ─── Update ────────────────────────────────────────────────────────────────
-
-    @PutMapping("/{id}")
+    /*
+    PutMapping("/{id}")
     public ResponseEntity<Void> updatePatient(
             @PathVariable String id,
             @Valid @RequestBody PatientDto dto) {
         log.info("Updating patient with id: {}", id);
         medicalRecordService.updatePatient(id, dto);
         return ResponseEntity.noContent().build();
-    }
+    }*/
 
     // ─── Exception Handlers ────────────────────────────────────────────────────
 

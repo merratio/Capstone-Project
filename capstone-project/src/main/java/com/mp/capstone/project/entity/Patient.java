@@ -1,49 +1,112 @@
 package com.mp.capstone.project.entity;
 
-import jakarta.persistence.*;
-import java.time.LocalDateTime;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+
+import java.util.Date;
 
 @Entity
-@Table(name = "patients")
+@Table(name="patients")
 public class Patient {
-
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private String id;
+    String trn;
+    @Column(nullable=false)
+    String firstName;
+    @Column(nullable=false)
+    String lastName;
+    String gender;
+    String religion;
+    String address;
+    @Column(nullable=false)
+    String bloodType;
+    @Column(nullable=false)
+    Date dob;
 
-    @Column(nullable = false)
-    private String name;
-
-    @Column(nullable = false)
-    private String diagnosis;
-
-    @Column(nullable = false)
-    private LocalDateTime lastUpdated;
-
-    // Required by JPA
-    protected Patient() {
-        this.id = "";
-        this.name = "";
-        this.diagnosis = "";
-        this.lastUpdated = LocalDateTime.now();
+    public Patient() {
+        this.address = "";
+        this.bloodType = "";
+        this.dob = new Date();
+        this.firstName = "";
+        this.gender = "";
+        this.lastName = "";
+        this.religion = "";
+        this.trn = "";
     }
 
-    public Patient(String id, String name, String diagnosis, LocalDateTime lastUpdated) {
-        this.id = id;
-        this.name = name;
-        this.diagnosis = diagnosis;
-        this.lastUpdated = lastUpdated;
+    public Patient(String address, String bloodType, Date dob, String firstName, String gender, String lastName, String religion, String trn) {
+        this.address = address;
+        this.bloodType = bloodType;
+        this.dob = dob;
+        this.firstName = firstName;
+        this.gender = gender;
+        this.lastName = lastName;
+        this.religion = religion;
+        this.trn = trn;
     }
 
-    public String getId() { return id; }
-    public void setId(String id) { this.id = id; }
+    public String getAddress() {
+        return address;
+    }
 
-    public String getName() { return name; }
-    public void setName(String name) { this.name = name; }
+    public void setAddress(String address) {
+        this.address = address;
+    }
 
-    public String getDiagnosis() { return diagnosis; }
-    public void setDiagnosis(String diagnosis) { this.diagnosis = diagnosis; }
+    public String getBloodType() {
+        return bloodType;
+    }
 
-    public LocalDateTime getLastUpdated() { return lastUpdated; }
-    public void setLastUpdated(LocalDateTime lastUpdated) { this.lastUpdated = lastUpdated; }
+    public void setBloodType(String bloodType) {
+        this.bloodType = bloodType;
+    }
+
+    public Date getDob() {
+        return dob;
+    }
+
+    public void setDob(Date dob) {
+        this.dob = dob;
+    }
+
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public String getGender() {
+        return gender;
+    }
+
+    public void setGender(String gender) {
+        this.gender = gender;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+
+    public String getReligion() {
+        return religion;
+    }
+
+    public void setReligion(String religion) {
+        this.religion = religion;
+    }
+
+    public String getTrn() {
+        return trn;
+    }
+
+    public void setTrn(String trn) {
+        this.trn = trn;
+    }
 }

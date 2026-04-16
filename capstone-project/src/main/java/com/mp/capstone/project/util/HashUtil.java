@@ -1,6 +1,6 @@
 package com.mp.capstone.project.util;
 
-import com.mp.capstone.project.entity.Patient;
+import com.mp.capstone.project.entity.MedicalRecord;
 
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
@@ -11,7 +11,7 @@ public class HashUtil {
 
     private HashUtil() {} // utility class — prevent instantiation
 
-    public static String generateHash(Patient patient) {
+    public static String generateHash(MedicalRecord patient) {
         try {
             MessageDigest digest = MessageDigest.getInstance("SHA-256");
 

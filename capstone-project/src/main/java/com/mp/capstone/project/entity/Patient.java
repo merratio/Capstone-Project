@@ -11,18 +11,18 @@ import java.util.Date;
 @Table(name="patients")
 public class Patient {
     @Id
-    String trn;
+    private String trn;
     @Column(nullable=false)
-    String firstName;
+    private String firstName;
     @Column(nullable=false)
-    String lastName;
-    String gender;
-    String religion;
-    String address;
+    private String lastName;
+    private String gender;
+    private String religion;
+    private String address;
     @Column(nullable=false)
-    String bloodType;
+    private String bloodType;
     @Column(nullable=false)
-    Date dob;
+    private Date dob;
 
     public Patient() {
         this.address = "";

@@ -3,6 +3,8 @@ package com.mp.capstone.project.entity;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "medical_records")
@@ -34,6 +36,13 @@ public class MedicalRecord {
 
     @Column(nullable = false)
     private LocalDateTime lastUpdated;
+
+    public Set<Employee> getEmployees() {
+        return employees;
+    }
+
+    @ManyToMany(mappedBy = "records") // "courses" refers to the field name in Student
+    private Set<Employee> employees = new HashSet<>();
 
     public MedicalRecord() {
         this.conditionName = "";

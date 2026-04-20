@@ -3,6 +3,8 @@ package com.mp.capstone.project.entity;
 import jakarta.persistence.*;
 
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name="employees")
@@ -17,9 +19,17 @@ public class Employee {
     private String Name;
     private String Religion;
     Date dob;
-    @ManyToOne // Defines the relationship
-    @JoinColumn(name = "supervisor_id") // Points to the foreign key column
-    private Employee emp;
+
+    @ManyToMany(mappedBy = "employees") // "courses" refers to the field name in Student
+    private Set<Patient> patients = new HashSet<>();
+
+    @ManyToMany
+    @JoinTable(
+            name = "employee_medicalrecord", // The name of the join table
+            joinColumns = @JoinColumn(name = "emp_id"), // FK to Student
+            inverseJoinColumns = @JoinColumn(name = "rec_id") // FK to Course
+    )
+    private Set<MedicalRecord> records = new HashSet<>();
 
     public Employee() {
         this.dob = new Date();

@@ -1,11 +1,12 @@
 package com.mp.capstone.project.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
+
+import static org.springframework.data.jpa.domain.AbstractPersistable_.id;
 
 @Entity
 @Table(name="patients")
@@ -23,6 +24,14 @@ public class Patient {
     private String bloodType;
     @Column(nullable=false)
     private Date dob;
+
+    @ManyToMany
+    @JoinTable(
+            name = "patient_employee", // The name of the join table
+            joinColumns = @JoinColumn(name = "patient_id"), // FK to Student
+            inverseJoinColumns = @JoinColumn(name = "emp_id") // FK to Course
+    )
+    private Set<Employee> employees = new HashSet<>();
 
     public Patient() {
         this.address = "";
@@ -109,4 +118,22 @@ public class Patient {
     public void setTrn(String trn) {
         this.trn = trn;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        // Use instanceof to handle Hibernate proxy objects
+        if (!(o instanceof Patient)) return false;
+        Patient patient = (Patient) o;
+        // Use a business key or ID (if not null) to check equality
+        return id != null && id.equals(patient.getTrn());
+    }
+
+    @Override
+    public int hashCode() {
+        // Return a constant if using generated IDs to ensure
+        // the hash doesn't change after the object is saved.
+        return getClass().hashCode();
+    }
+
 }

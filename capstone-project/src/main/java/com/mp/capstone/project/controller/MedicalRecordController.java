@@ -32,7 +32,7 @@ public class MedicalRecordController {
     // ─── Create ────────────────────────────────────────────────────────────────
 
     @PostMapping
-    public ResponseEntity<Map<String, String>> createPatient(@Valid @RequestBody MedicalRecord record) {
+    public ResponseEntity<Map<String, String>> createMedicalRecord(@Valid @RequestBody MedicalRecord record) {
         log.info("Received request to create patient");
         String generated = medicalRecordService.createMedicalRecord(record);
 
@@ -44,14 +44,14 @@ public class MedicalRecordController {
     // ─── Read ──────────────────────────────────────────────────────────────────
 
     @GetMapping("/{id}")
-    public ResponseEntity<MedicalRecord> getPatient(@PathVariable String id) {
+    public ResponseEntity<MedicalRecord> getMedicalRecord(@PathVariable String id) {
         log.info("Fetching record with id: {}", id);
         MedicalRecord record = medicalRecordService.getRecord(id);
         return ResponseEntity.ok(record);
     }
 
     @GetMapping
-    public ResponseEntity<List<MedicalRecord>> getAllPatients() {
+    public ResponseEntity<List<MedicalRecord>> getAllMedicalRecords() {
         log.info("Fetching all records");
         List<MedicalRecord> records = medicalRecordService.getAllRecords();
         return ResponseEntity.ok(records);

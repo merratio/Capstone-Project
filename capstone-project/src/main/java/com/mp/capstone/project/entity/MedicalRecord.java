@@ -27,19 +27,11 @@ public class MedicalRecord {
     private Boolean hereditary;
 
     @ManyToOne // Defines the relationship
-    @JoinColumn(name = "accessed_by") // Points to the foreign key column
-    private Employee emp;
-
-    @ManyToOne // Defines the relationship
     @JoinColumn(name = "patient_id") // Points to the foreign key column
     private Patient pat;
 
     @Column(nullable = false)
     private LocalDateTime lastUpdated;
-
-    public Set<Employee> getEmployees() {
-        return employees;
-    }
 
     @ManyToMany(mappedBy = "records") // "courses" refers to the field name in Student
     private Set<Employee> employees = new HashSet<>();
@@ -47,7 +39,6 @@ public class MedicalRecord {
     public MedicalRecord() {
         this.conditionName = "";
         this.diagnosisDate = new Date();
-        this.emp = new Employee();
         this.hereditary = false;
         this.id = "";
         this.lastUpdated = LocalDateTime.now();
@@ -58,12 +49,15 @@ public class MedicalRecord {
     public MedicalRecord(String conditionName, Date diagnosisDate, Employee emp, Boolean hereditary, String id, LocalDateTime lastUpdated, Patient pat, String status) {
         this.conditionName = conditionName;
         this.diagnosisDate = diagnosisDate;
-        this.emp = emp;
         this.hereditary = hereditary;
         this.id = id;
         this.lastUpdated = lastUpdated;
         this.pat = pat;
         this.status = status;
+    }
+
+    public Set<Employee> getEmployees() {
+        return employees;
     }
 
     public String getConditionName() {
@@ -80,14 +74,6 @@ public class MedicalRecord {
 
     public void setDiagnosisDate(Date diagnosisDate) {
         this.diagnosisDate = diagnosisDate;
-    }
-
-    public Employee getEmp() {
-        return emp;
-    }
-
-    public void setEmp(Employee emp) {
-        this.emp = emp;
     }
 
     public Boolean getHereditary() {

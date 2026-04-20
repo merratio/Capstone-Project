@@ -10,6 +10,7 @@ import com.mp.capstone.project.repository.MedicalRecordRepository;
 import com.mp.capstone.project.util.HashUtil;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -81,6 +82,19 @@ public class MedicalRecordService {
         verifyIntegrity(record);
 
         return record;
+    }
+
+    //possible endpoint
+    @Transactional
+    public List<MedicalRecord> getPatientRecords(String patId){
+        List<MedicalRecord> records = new ArrayList<>();
+        records = repo.findByPatientId(patId)
+                .stream()
+                .toList();
+        for(MedicalRecord rec:records){
+            verifyIntegrity(rec);
+        }
+        return records;
     }
 
     @Transactional(readOnly = true)

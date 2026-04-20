@@ -136,4 +136,14 @@ public class Patient {
         return getClass().hashCode();
     }
 
+    public void addEmployee(Employee emp) {
+        this.employees.add(emp);
+        emp.getPatients().add(this); // Keeps both sides in sync
+    }
+
+    public void removeEmployee(Employee emp) {
+        this.employees.remove(emp);
+        emp.getPatients().remove(this);
+    }
+
 }

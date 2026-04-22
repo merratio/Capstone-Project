@@ -10,6 +10,6 @@ import java.util.Optional;
 
 @Repository
 public interface ContactInfoRepository extends JpaRepository<ContactInfo, Long> {
-  List<ContactInfo> findByPat_PatientId(Long patientId);
+  List<ContactInfo> findByPat_PatientId(String patientId);
 }
 

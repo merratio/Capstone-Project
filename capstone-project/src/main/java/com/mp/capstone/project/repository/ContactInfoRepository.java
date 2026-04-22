@@ -10,6 +10,8 @@ import java.util.Optional;
 
 @Repository
 public interface ContactInfoRepository extends JpaRepository<ContactInfo, Long> {
-  List<ContactInfo> findByPat_PatientId(String patientId);
+    List<ContactInfo> findByPat_Trn(String trn);
+    Optional<ContactInfo> findByContactIdAndPat_Trn(Long contactId, String trn);
+    boolean existsByPat_TrnAndContact(String trn, String contact);
 }
 

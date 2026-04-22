@@ -21,20 +21,16 @@ public class ContactInfoController {
 
     private static final Logger log = LoggerFactory.getLogger(ContactInfoController.class);
 
-    @PostMapping("")
-    public ResponseEntity<String> createPatient(@Valid @RequestBody ContactInfo con) {
-        log.info("Received request to create contact information");
-        conService.addContact(con);
-
-        return ResponseEntity
-                .status(HttpStatus.CREATED)
-                .body("created");
+    public ResponseEntity<ContactInfo> addContact(
+            @PathVariable String patientId,
+            @RequestBody ContactInfo contactInfo) {
+        ContactInfo created = contactInfoService.addContact(patientId, contactInfo);
+        return ResponseEntity.status(HttpStatus.CREATED).body(created);
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<List<ContactInfo>> getPatient(@PathVariable String id) {
-        log.info("Fetching contact info for patient with id: {}", id);
-        List<ContactInfo> contacts = conService.getContactInfo(id);
+    @GetMapping("/patient/{patientId}")
+    public ResponseEntity<List<ContactInfo>> getContactsByPatient(@PathVariable String patientId) {
+        List<ContactInfo> contacts = contactInfoService.getContactsByPatientId(patientId);
         return ResponseEntity.ok(contacts);
     }
 
@@ -43,5 +39,26 @@ public class ContactInfoController {
         log.info("Fetching all contacts");
         List<ContactInfo> contacts = conService.getAllContactInfo();
         return ResponseEntity.ok(contacts);
+    }
+
+     // PUT update an existing contact
+    // PUT /api/contacts/patient/1/contact/3
+    @PutMapping("/patient/{patientId}/contact/{contactId}")
+    public ResponseEntity<ContactInfo> updateContact(
+            @PathVariable Long patientId,
+            @PathVariable Long contactId,
+            @RequestBody ContactInfo contactInfo) {
+        ContactInfo updated = contactInfoService.updateContact(patientId, contactId, contactInfo);
+        return ResponseEntity.ok(updated);
+    }
+
+    // DELETE a contact
+    // DELETE /api/contacts/patient/1/contact/3
+    @DeleteMapping("/patient/{patientId}/contact/{contactId}")
+    public ResponseEntity<String> deleteContact(
+            @PathVariable Long patientId,
+            @PathVariable Long contactId) {
+        contactInfoService.deleteContact(patientId, contactId);
+        return ResponseEntity.ok("Contact deleted successfully.");
     }
 }

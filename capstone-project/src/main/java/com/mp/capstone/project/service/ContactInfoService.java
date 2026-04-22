@@ -19,7 +19,7 @@ public class ContactInfoService {
     private PatientRepository patientRepository;
 
     // Get all contacts for a patient
-    public List<ContactInfo> getContactsByPatientId(Long patientId) {
+    public List<ContactInfo> getContactsByPatientId(String patientId) {
         // Verify patient exists before querying contacts
         patientRepository.findById(patientId)
                 .orElseThrow(() -> new RuntimeException("Patient not found with ID: " + patientId));
@@ -28,7 +28,7 @@ public class ContactInfoService {
     }
 
     // Add a new contact for a patient
-    public ContactInfo addContact(Long patientId, ContactInfo contactInfo) {
+    public ContactInfo addContact(String patientId, ContactInfo contactInfo) {
         Patient patient = patientRepository.findById(patientId)
                 .orElseThrow(() -> new RuntimeException("Patient not found with ID: " + patientId));
 
@@ -42,7 +42,7 @@ public class ContactInfoService {
     }
 
     // Update an existing contact
-    public ContactInfo updateContact(Long patientId, Long contactId, ContactInfo updatedInfo) {
+    public ContactInfo updateContact(String patientId, Long contactId, ContactInfo updatedInfo) {
         ContactInfo existing = contactInfoRepository
                 .findByContactIdAndPat_PatientId(contactId, patientId)
                 .orElseThrow(() -> new RuntimeException("Contact not found for this patient."));
@@ -54,7 +54,7 @@ public class ContactInfoService {
     }
 
     // Delete a contact
-    public void deleteContact(Long patientId, Long contactId) {
+    public void deleteContact(String patientId, Long contactId) {
         ContactInfo existing = contactInfoRepository
                 .findByContactIdAndPat_PatientId(contactId, patientId)
                 .orElseThrow(() -> new RuntimeException("Contact not found for this patient."));

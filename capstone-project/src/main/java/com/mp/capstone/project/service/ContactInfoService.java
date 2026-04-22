@@ -48,7 +48,6 @@ public class ContactInfoService {
                 .orElseThrow(() -> new RuntimeException("Contact not found for this patient."));
 
         existing.setContact(updatedInfo.getContact());
-        existing.setContactType(updatedInfo.getContactType());
 
         return contactInfoRepository.save(existing);
     }

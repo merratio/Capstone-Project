@@ -107,23 +107,18 @@ public class Employee {
         return records;
     }
 
-    @Override
+   @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        // Use instanceof to handle Hibernate proxy objects
         if (!(o instanceof Employee)) return false;
         Employee emp = (Employee) o;
-        // Use a business key or ID (if not null) to check equality
         return id != null && id.equals(emp.getId());
     }
 
     @Override
     public int hashCode() {
-        // Return a constant if using generated IDs to ensure
-        // the hash doesn't change after the object is saved.
         return getClass().hashCode();
     }
-
     public void addEmployee(MedicalRecord rec) {
         this.records.add(rec);
         rec.getEmployees().add(this); // Keeps both sides in sync

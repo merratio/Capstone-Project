@@ -19,6 +19,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/medicalrecords")
+@CrossOrigin(origins="*")
 public class MedicalRecordController {
 
     private static final Logger log = LoggerFactory.getLogger(MedicalRecordController.class);

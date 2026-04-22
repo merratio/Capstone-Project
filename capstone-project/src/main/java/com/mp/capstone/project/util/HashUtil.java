@@ -11,7 +11,7 @@ public class HashUtil {
 
     private HashUtil() {} // utility class — prevent instantiation
 
-    public static String generateHash(MedicalRecord patient) {
+    public static String generateHash(MedicalRecord record) {
         try {
             MessageDigest digest = MessageDigest.getInstance("SHA-256");
 
@@ -19,10 +19,12 @@ public class HashUtil {
             // e.g. id="AB", name="C" vs id="A", name="BC" → now distinct
             // lastUpdated included so timestamp changes are detected
             String data = String.join("|",
-                    patient.getId(),
-                    patient.getName(),
-                    patient.getDiagnosis(),
-                    patient.getLastUpdated().toString()
+                    record.getId(),
+                    record.getConditionName(),
+                    record.getStatus(),
+                    record.getDiagnosisDate().toString(),
+                    String.valueOf(record.getHereditary()),  // Boolean → String
+                    record.getLastUpdated().toString()
             );
 
             byte[] hashBytes = digest.digest(data.getBytes(StandardCharsets.UTF_8));

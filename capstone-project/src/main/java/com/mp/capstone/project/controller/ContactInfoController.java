@@ -14,6 +14,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/contactinfo")
+@CrossOrigin(origins="*")
 public class ContactInfoController {
     @Autowired
     ContactInfoService conService;

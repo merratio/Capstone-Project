@@ -3,9 +3,10 @@ package com.mp.capstone.project.service;
 import com.mp.capstone.project.entity.ContactInfo;
 import com.mp.capstone.project.repository.ContactInfoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
-
+@Service
 public class ContactInfoService {
     @Autowired
     ContactInfoRepository conRepo;

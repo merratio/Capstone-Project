@@ -7,7 +7,6 @@ import jakarta.persistence.*;
 public class ContactInfo {
     @Column(nullable=false)
     private String contact;
-
     @Id
     @ManyToOne // Defines the relationship
     @JoinColumn(name = "patient_id") // Points to the foreign key column

@@ -21,6 +21,7 @@ public class ContactInfoController {
 
     private static final Logger log = LoggerFactory.getLogger(ContactInfoController.class);
 
+    @PostMapping("/patient/{trn}")
     public ResponseEntity<ContactInfo> addContact(
             @PathVariable String patientId,
             @RequestBody ContactInfo contactInfo) {

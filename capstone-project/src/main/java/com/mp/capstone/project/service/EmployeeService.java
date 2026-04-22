@@ -3,6 +3,7 @@ package com.mp.capstone.project.service;
 import com.mp.capstone.project.entity.Employee;
 import com.mp.capstone.project.entity.MedicalRecord;
 import com.mp.capstone.project.entity.Patient;
+import com.mp.capstone.project.exception.ResourceNotFoundException;
 import com.mp.capstone.project.repository.EmployeeRepository;
 import com.mp.capstone.project.repository.PatientRepository;
 import jakarta.transaction.Transactional;

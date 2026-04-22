@@ -2,6 +2,7 @@ package com.mp.capstone.project.service;
 
 import com.mp.capstone.project.entity.ContactInfo;
 import com.mp.capstone.project.entity.Patient;
+import com.mp.capstone.project.exception.ResourceNotFoundException;
 import com.mp.capstone.project.repository.ContactInfoRepository;
 import com.mp.capstone.project.repository.PatientRepository;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -45,7 +45,6 @@ public class ContactInfo {
         return "ContactInfo{" +
                 "contactId=" + contactId +
                 ", contact='" + contact + '\'' +
-                ", contactType='" + contactType + '\'' +
                 '}';
     }
 }

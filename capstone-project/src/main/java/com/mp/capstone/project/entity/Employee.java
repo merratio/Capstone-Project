@@ -119,12 +119,13 @@ public class Employee {
     public int hashCode() {
         return getClass().hashCode();
     }
-    public void addEmployee(MedicalRecord rec) {
+
+    public void addRecord(MedicalRecord rec) {
         this.records.add(rec);
         rec.getEmployees().add(this); // Keeps both sides in sync
     }
 
-    public void removeEmployee(MedicalRecord rec) {
+    public void removeRecord(MedicalRecord rec) {
         this.records.remove(rec);
         rec.getEmployees().remove(this);
     }

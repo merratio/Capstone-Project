@@ -17,7 +17,7 @@ import java.util.List;
 @CrossOrigin(origins="*")
 public class ContactInfoController {
     @Autowired
-    ContactInfoService conService;
+    ContactInfoService contactInfoService;
 
     private static final Logger log = LoggerFactory.getLogger(ContactInfoController.class);
 
@@ -38,7 +38,7 @@ public class ContactInfoController {
     @GetMapping
     public ResponseEntity<List<ContactInfo>> getAllPatients() {
         log.info("Fetching all contacts");
-        List<ContactInfo> contacts = conService.getAllContactInfo();
+        List<ContactInfo> contacts = contactInfoService.getAllContactInfo();
         return ResponseEntity.ok(contacts);
     }
 
@@ -46,7 +46,7 @@ public class ContactInfoController {
     // PUT /api/contacts/patient/1/contact/3
     @PutMapping("/patient/{patientId}/contact/{contactId}")
     public ResponseEntity<ContactInfo> updateContact(
-            @PathVariable Long patientId,
+            @PathVariable String patientId,
             @PathVariable Long contactId,
             @RequestBody ContactInfo contactInfo) {
         ContactInfo updated = contactInfoService.updateContact(patientId, contactId, contactInfo);
@@ -57,7 +57,7 @@ public class ContactInfoController {
     // DELETE /api/contacts/patient/1/contact/3
     @DeleteMapping("/patient/{patientId}/contact/{contactId}")
     public ResponseEntity<String> deleteContact(
-            @PathVariable Long patientId,
+            @PathVariable String patientId,
             @PathVariable Long contactId) {
         contactInfoService.deleteContact(patientId, contactId);
         return ResponseEntity.ok("Contact deleted successfully.");

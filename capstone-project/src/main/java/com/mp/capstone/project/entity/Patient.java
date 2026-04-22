@@ -2,7 +2,7 @@ package com.mp.capstone.project.entity;
 
 import jakarta.persistence.*;
 
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -12,6 +12,7 @@ import static org.springframework.data.jpa.domain.AbstractPersistable_.id;
 @Table(name="patients")
 public class Patient {
     @Id
+    @Column(name="trn")
     private String trn;
     @Column(nullable=false)
     private String firstName;
@@ -22,8 +23,8 @@ public class Patient {
     private String address;
     @Column(nullable=false)
     private String bloodType;
-    @Column(nullable=false)
-    private Date dob;
+    @Column(nullable=true)
+    private LocalDate dob;
 
     @ManyToMany
     @JoinTable(
@@ -36,7 +37,6 @@ public class Patient {
     public Patient() {
         this.address = "";
         this.bloodType = "";
-        this.dob = new Date();
         this.firstName = "";
         this.gender = "";
         this.lastName = "";
@@ -44,7 +44,7 @@ public class Patient {
         this.trn = "";
     }
 
-    public Patient(String address, String bloodType, Date dob, String firstName, String gender, String lastName, String religion, String trn) {
+    public Patient(String address, String bloodType, LocalDate dob, String firstName, String gender, String lastName, String religion, String trn) {
         this.address = address;
         this.bloodType = bloodType;
         this.dob = dob;
@@ -71,11 +71,11 @@ public class Patient {
         this.bloodType = bloodType;
     }
 
-    public Date getDob() {
+    public LocalDate getDob() {
         return dob;
     }
 
-    public void setDob(Date dob) {
+    public void setDob(LocalDate dob) {
         this.dob = dob;
     }
 

@@ -122,17 +122,13 @@ public class Patient {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        // Use instanceof to handle Hibernate proxy objects
         if (!(o instanceof Patient)) return false;
         Patient patient = (Patient) o;
-        // Use a business key or ID (if not null) to check equality
-        return id != null && id.equals(patient.getTrn());
+        return trn != null && trn.equals(patient.getTrn());
     }
 
     @Override
     public int hashCode() {
-        // Return a constant if using generated IDs to ensure
-        // the hash doesn't change after the object is saved.
         return getClass().hashCode();
     }
 

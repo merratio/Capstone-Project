@@ -18,23 +18,24 @@ public class ContactInfoService {
     @Autowired
     private PatientRepository patientRepository;
 
+    public List<ContactInfo> getAllContactInfo() {
+        return contactInfoRepository.findAll();
+    }
+    
     // Get all contacts for a patient
-    public List<ContactInfo> getContactsByPatientId(String patientId) {
-        // Verify patient exists before querying contacts
-        patientRepository.findById(patientId)
-                .orElseThrow(() -> new RuntimeException("Patient not found with ID: " + patientId));
-
-        return contactInfoRepository.findByPat_PatientId(patientId);
+    public List<ContactInfo> getContactsByPatientId(String trn) {
+        patientRepository.findById(trn)
+                .orElseThrow(() -> new ResourceNotFoundException("Patient not found with TRN: " + trn));
+        return contactInfoRepository.findByPat_Trn(trn);
     }
 
     // Add a new contact for a patient
-    public ContactInfo addContact(String patientId, ContactInfo contactInfo) {
-        Patient patient = patientRepository.findById(patientId)
-                .orElseThrow(() -> new RuntimeException("Patient not found with ID: " + patientId));
+    public ContactInfo addContact(String trn, ContactInfo contactInfo) {
+        Patient patient = patientRepository.findById(trn)
+                .orElseThrow(() -> new ResourceNotFoundException("Patient not found with TRN: " + trn));
 
-        // Check for duplicate contact
-        if (contactInfoRepository.existsByPat_PatientIdAndContact(patientId, contactInfo.getContact())) {
-            throw new RuntimeException("Contact already exists for this patient.");
+        if (contactInfoRepository.existsByPat_TrnAndContact(trn, contactInfo.getContact())) {
+            throw new IllegalArgumentException("Contact already exists for this patient.");
         }
 
         contactInfo.setPat(patient);
@@ -42,21 +43,20 @@ public class ContactInfoService {
     }
 
     // Update an existing contact
-    public ContactInfo updateContact(String patientId, Long contactId, ContactInfo updatedInfo) {
+    public ContactInfo updateContact(String trn, Long contactId, ContactInfo updatedInfo) {
         ContactInfo existing = contactInfoRepository
-                .findByContactIdAndPat_PatientId(contactId, patientId)
-                .orElseThrow(() -> new RuntimeException("Contact not found for this patient."));
+                .findByContactIdAndPat_Trn(contactId, trn)
+                .orElseThrow(() -> new ResourceNotFoundException("Contact not found for this patient."));
 
         existing.setContact(updatedInfo.getContact());
 
         return contactInfoRepository.save(existing);
     }
 
-    // Delete a contact
-    public void deleteContact(String patientId, Long contactId) {
+    public void deleteContact(String trn, Long contactId) {
         ContactInfo existing = contactInfoRepository
-                .findByContactIdAndPat_PatientId(contactId, patientId)
-                .orElseThrow(() -> new RuntimeException("Contact not found for this patient."));
+                .findByContactIdAndPat_Trn(contactId, trn)
+                .orElseThrow(() -> new ResourceNotFoundException("Contact not found for this patient."));
 
         contactInfoRepository.delete(existing);
     }

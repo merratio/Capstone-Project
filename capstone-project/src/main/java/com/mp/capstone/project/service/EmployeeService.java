@@ -39,23 +39,17 @@ public class EmployeeService {
         return empRepo.findAll();
     }
 
-    @Transactional
-    public void assignRecords(String patientId, String empId, String recId) {
+  @Transactional
+    public void assignPatientRecordsToEmployee(String patientTrn, String empId) {
+        Employee emp = empRepo.findById(empId)
+                .orElseThrow(() -> new ResourceNotFoundException("Employee not found: " + empId));
 
-        // 1. Fetch both from DB
-        Patient pat = patRepo.findById(patientId).orElseThrow();
-        Employee emp = empRepo.findById(empId).orElseThrow();
+        List<MedicalRecord> records = recordService.getPatientRecords(patientTrn);
 
-        List<MedicalRecord> records = new ArrayList<>();
-        records = recordService.getPatientRecords(empId);
-
-        // 2. Use the helper method to link them
-        for(MedicalRecord record : records){
-            emp.getRecords().add(record);
+        for (MedicalRecord record : records) {
+            emp.addRecord(record);
         }
 
-        // 3. Save the OWNER (Student).
-        // JPA updates the 'student_course' table automatically.
         empRepo.save(emp);
     }
 }

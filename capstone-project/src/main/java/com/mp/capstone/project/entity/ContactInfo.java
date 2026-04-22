@@ -19,12 +19,14 @@ public class ContactInfo {
     private Patient pat;
 
     // Default constructor (required by JPA)
-    public ContactInfo() {}
+    public ContactInfo() {
+        this.contact = "";
+        this.pat = new Patient();
+    }
 
     // Parameterized constructor
-    public ContactInfo(String contact, String contactType, Patient pat) {
+    public ContactInfo(String contact, Patient pat) {
         this.contact = contact;
-        this.contactType = contactType;
         this.pat = pat;
     }
 

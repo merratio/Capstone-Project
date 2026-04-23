@@ -20,6 +20,9 @@ public class MedicalRecordService {
     private final MedicalRecordRepository repo;
     private final BlockchainService blockchainService;
 
+     @Autowired
+    private PatientRepository patientRepository;
+
     public MedicalRecordService(MedicalRecordRepository repo,
                                 BlockchainService blockchainService) {
         this.repo = repo;
@@ -27,7 +30,8 @@ public class MedicalRecordService {
     }
 
     @Transactional
-    public String createMedicalRecord(MedicalRecord record) {
+    public String createMedicalRecord(MedicalRecord record String patId) {
+        
         String recordId = (record.getId() == null || record.getId().isEmpty())
                 ? generateRecordId()
                 : record.getId();

@@ -28,7 +28,7 @@ public class MedicalRecord {
 
     @ManyToOne // Defines the relationship
     @JoinColumn(name = "patient_id") // Points to the foreign key column
-    private Patient pat;
+    private Patient patient;
 
     @Column(nullable = false)
     private LocalDateTime lastUpdated;
@@ -42,17 +42,26 @@ public class MedicalRecord {
         this.hereditary = false;
         this.id = "";
         this.lastUpdated = LocalDateTime.now();
-        this.pat = new Patient();
+        this.patient = new Patient();
         this.status = "";
     }
 
-    public MedicalRecord(String conditionName, Date diagnosisDate, Employee emp, Boolean hereditary, String id, LocalDateTime lastUpdated, Patient pat, String status) {
+    public MedicalRecord(String conditionName, Date diagnosisDate, Boolean hereditary, String id, LocalDateTime lastUpdated, Patient pat, String status) {
         this.conditionName = conditionName;
         this.diagnosisDate = diagnosisDate;
         this.hereditary = hereditary;
         this.id = id;
         this.lastUpdated = lastUpdated;
-        this.pat = pat;
+        this.patient = pat;
+        this.status = status;
+    }
+
+    public MedicalRecord(String conditionName, Date diagnosisDate, Boolean hereditary, LocalDateTime lastUpdated, Patient pat, String status) {
+        this.conditionName = conditionName;
+        this.diagnosisDate = diagnosisDate;
+        this.hereditary = hereditary;
+        this.lastUpdated = lastUpdated;
+        this.patient = pat;
         this.status = status;
     }
 
@@ -101,11 +110,11 @@ public class MedicalRecord {
     }
 
     public Patient getPat() {
-        return pat;
+        return patient;
     }
 
     public void setPat(Patient pat) {
-        this.pat = pat;
+        this.patient = pat;
     }
 
     public String getStatus() {

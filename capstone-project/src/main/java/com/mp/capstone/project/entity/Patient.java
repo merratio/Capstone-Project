@@ -12,7 +12,7 @@ import static org.springframework.data.jpa.domain.AbstractPersistable_.id;
 @Table(name="patients")
 public class Patient {
     @Id
-    @Column(name="trn")
+    //@Column(name="trn")
     private String trn;
     @Column(nullable=false)
     private String firstName;

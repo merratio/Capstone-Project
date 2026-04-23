@@ -88,7 +88,7 @@ public class MedicalRecordService {
     @Transactional
     public List<MedicalRecord> getPatientRecords(String patId){
         List<MedicalRecord> records = new ArrayList<>();
-        records = repo.findByPatientId(patId)
+        records = repo.findByPatientTrn(patId)
                 .stream()
                 .toList();
         for(MedicalRecord rec:records){

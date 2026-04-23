@@ -52,7 +52,6 @@ public class MedicalRecord {
         this.hereditary = hereditary;
         this.id = id;
         this.lastUpdated = lastUpdated;
-        this.patient = pat;
         this.status = status;
     }
 

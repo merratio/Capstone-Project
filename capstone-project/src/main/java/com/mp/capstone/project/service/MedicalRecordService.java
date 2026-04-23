@@ -2,8 +2,10 @@ package com.mp.capstone.project.service;
 
 import com.mp.capstone.project.dto.PatientDto;
 import com.mp.capstone.project.entity.MedicalRecord;
+import com.mp.capstone.project.entity.Patient;
 import com.mp.capstone.project.exception.DataIntegrityException;
 import com.mp.capstone.project.exception.ResourceNotFoundException;
+import com.mp.capstone.project.repository.PatientRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import com.mp.capstone.project.repository.MedicalRecordRepository;
@@ -19,24 +21,25 @@ public class MedicalRecordService {
 
     private final MedicalRecordRepository repo;
     private final BlockchainService blockchainService;
-
-     @Autowired
-    private PatientRepository patientRepository;
+    private final PatientRepository patientRepository;
 
     public MedicalRecordService(MedicalRecordRepository repo,
-                                BlockchainService blockchainService) {
+                                BlockchainService blockchainService, PatientRepository patientRepository) {
         this.repo = repo;
         this.blockchainService = blockchainService;
+        this.patientRepository = patientRepository;
     }
 
     @Transactional
-    public String createMedicalRecord(MedicalRecord record String patId) {
-        Patient pat = patientRepository.
+    public String createMedicalRecord(MedicalRecord record, String patId) {
+        Patient pat = patientRepository.findById(patId).orElseThrow();
+
         String recordId = (record.getId() == null || record.getId().isEmpty())
                 ? generateRecordId()
                 : record.getId();
 
         record.setId(recordId);
+        record.setPat(pat);
 
         // Generate hash before saving to DB
         String hash = HashUtil.generateHash(record);

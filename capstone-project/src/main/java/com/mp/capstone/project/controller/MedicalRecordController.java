@@ -32,10 +32,11 @@ public class MedicalRecordController {
 
     // ─── Create ────────────────────────────────────────────────────────────────
 
-    @PostMapping
-    public ResponseEntity<Map<String, String>> createMedicalRecord(@Valid @RequestBody MedicalRecord record) {
+    @PostMapping("/{patId}")
+    public ResponseEntity<Map<String, String>> createMedicalRecord(@Valid @RequestBody MedicalRecord record,
+                                                                   @PathVariable String patId) {
         log.info("Received request to create patient");
-        String generated = medicalRecordService.createMedicalRecord(record);
+        String generated = medicalRecordService.createMedicalRecord(record, patId);
 
         return ResponseEntity
                 .status(HttpStatus.CREATED)

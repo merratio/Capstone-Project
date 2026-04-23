@@ -31,7 +31,7 @@ public class MedicalRecordService {
 
     @Transactional
     public String createMedicalRecord(MedicalRecord record String patId) {
-        
+        Patient pat = patientRepository.
         String recordId = (record.getId() == null || record.getId().isEmpty())
                 ? generateRecordId()
                 : record.getId();

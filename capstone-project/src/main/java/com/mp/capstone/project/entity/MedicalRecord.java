@@ -46,7 +46,7 @@ public class MedicalRecord {
         this.status = "";
     }
 
-    public MedicalRecord(String conditionName, Date diagnosisDate, Boolean hereditary, String id, LocalDateTime lastUpdated, Patient pat, String status) {
+    public MedicalRecord(String conditionName, Date diagnosisDate, Boolean hereditary, String id, LocalDateTime lastUpdated, String status) {
         this.conditionName = conditionName;
         this.diagnosisDate = diagnosisDate;
         this.hereditary = hereditary;

@@ -22,7 +22,7 @@ public class EmployeeController {
 
     private static final Logger log = LoggerFactory.getLogger(EmployeeController.class);
 
-    @PostMapping("")
+    @PostMapping("{empId}")
     public ResponseEntity<String> createPatient(@Valid @RequestBody Employee emp) {
         log.info("Received request to create employee");
         empService.addEmployee(emp);
@@ -44,5 +44,14 @@ public class EmployeeController {
         log.info("Fetching all employees");
         List<Employee> employees = empService.getAllEmployee();
         return ResponseEntity.ok(employees);
+    }
+
+    @PutMapping("/{empId}")
+    public ResponseEntity<Void> updateEmployee(
+            @PathVariable String empId,
+            @Valid @RequestBody Employee emp) {
+        log.info("Updating employee with id: {}", empId);
+        empService.updateEmployee(empId, emp);
+        return ResponseEntity.noContent().build();
     }
 }

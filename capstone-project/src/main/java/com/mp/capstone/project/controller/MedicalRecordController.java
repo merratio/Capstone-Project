@@ -60,15 +60,14 @@ public class MedicalRecordController {
     }
 
     // ─── Update ────────────────────────────────────────────────────────────────
-    /*
-    PutMapping("/{id}")
+    @PutMapping("/{patId}")
     public ResponseEntity<Void> updatePatient(
-            @PathVariable String id,
-            @Valid @RequestBody PatientDto dto) {
-        log.info("Updating patient with id: {}", id);
-        medicalRecordService.updatePatient(id, dto);
+            @PathVariable String patId,
+            @Valid @RequestBody MedicalRecord rec) {
+        log.info("Updating medical record of patient with id: {}", patId);
+        medicalRecordService.updatePatientRecord(patId, rec);
         return ResponseEntity.noContent().build();
-    }*/
+    }
 
     // ─── Exception Handlers ────────────────────────────────────────────────────
 

@@ -53,4 +53,18 @@ public class EmployeeService {
 
         empRepo.save(emp);
     }
+
+    public void updateEmployee(String empId, Employee emp) {
+        Employee employee = empRepo.findById(empId).orElseThrow();
+
+        employee.setDob(emp.getDob());
+        employee.setName(emp.getName());
+        employee.setRole(emp.getRole());
+        employee.setGender(emp.getGender());
+        employee.setReligion(emp.getGender());
+
+        // Then save to database
+        empRepo.save(employee);
+
+    }
 }

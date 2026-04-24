@@ -2,7 +2,6 @@ package com.mp.capstone.project.controller;
 
 import com.mp.capstone.project.entity.ContactInfo;
 import com.mp.capstone.project.service.ContactInfoService;
-import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,9 +22,9 @@ public class ContactInfoController {
 
     @PostMapping("/patient/{trn}")
     public ResponseEntity<ContactInfo> addContact(
-            @PathVariable String patientId,
+            @PathVariable String trn,
             @RequestBody ContactInfo contactInfo) {
-        ContactInfo created = contactInfoService.addContact(patientId, contactInfo);
+        ContactInfo created = contactInfoService.addContact(trn, contactInfo);
         return ResponseEntity.status(HttpStatus.CREATED).body(created);
     }
 

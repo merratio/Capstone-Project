@@ -1,6 +1,8 @@
 package com.mp.capstone.project.controller;
 
 import com.mp.capstone.project.dto.PatientDto;
+import com.mp.capstone.project.dto.PatientEmployeeDto;
+import com.mp.capstone.project.entity.MedicalRecord;
 import com.mp.capstone.project.entity.Patient;
 import com.mp.capstone.project.service.PatientService;
 import jakarta.validation.Valid;
@@ -45,5 +47,22 @@ public class PatientController {
         log.info("Fetching all patients");
         List<Patient> patients = patientService.findAllPatient();
         return ResponseEntity.ok(patients);
+    }
+
+    @PutMapping("/{patId}")
+    public ResponseEntity<Void> updatePatient(
+            @PathVariable String patId,
+            @Valid @RequestBody Patient pat) {
+        log.info("Updating patient with id: {}", patId);
+        patientService.updatePatient(patId, pat);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/employees")
+    public ResponseEntity<String> assignEmployees(@Valid @RequestBody PatientEmployeeDto obj){
+        patientService.assignEmployee(obj.getPatientId(), obj.getEmpId());
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body("created");
     }
 }

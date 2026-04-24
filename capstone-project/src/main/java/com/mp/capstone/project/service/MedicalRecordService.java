@@ -57,29 +57,35 @@ public class MedicalRecordService {
         return recordId;
     }
 
-    /*
     @Transactional
-    public void updatePatient(String id, PatientDto dto) {
-        MedicalRecord patient = repo.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Patient not found: " + id));
+    public void updatePatientRecord(String patTrn, MedicalRecord rec) {
+        List<MedicalRecord> records = repo.findByPatientTrn(patTrn);
+        MedicalRecord updatedRecord = new MedicalRecord();
 
-        patient.setName(dto.getName());
-        patient.setDiagnosis(dto.getDiagnosis());
-        patient.setLastUpdated(LocalDateTime.now());
+        for(MedicalRecord record : records){
+            if(patTrn.equals(record.getPat().getTrn())){
+                record.setConditionName(rec.getConditionName());//patient.setName(dto.getName());
+                record.setHereditary(rec.getHereditary());//patient.setDiagnosis(dto.getDiagnosis());
+                record.setDiagnosisDate(rec.getDiagnosisDate());//patient.setLastUpdated(LocalDateTime.now());
+                record.setStatus(rec.getStatus());
+                record.setLastUpdated(LocalDateTime.now());
+                updatedRecord = record;
+            }
+        }
 
         // Generate new hash with updated data
-        String newHash = HashUtil.generateHash(patient);
+        String newHash = HashUtil.generateHash(updatedRecord);
 
         // Update on blockchain first
         try {
-            blockchainService.updateHash(id, newHash);
+            blockchainService.updateHash(updatedRecord.getId(), newHash);
         } catch (Exception e) {
             throw new RuntimeException("Failed to update hash on blockchain: " + e.getMessage(), e);
         }
 
         // Then save to database
-        repo.save(patient);
-    }*/
+        repo.save(updatedRecord);
+    }
 
     @Transactional(readOnly = true)
     public MedicalRecord getRecord(String id) {

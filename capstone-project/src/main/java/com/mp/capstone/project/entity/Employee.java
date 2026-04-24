@@ -22,7 +22,7 @@ public class Employee {
     private String Religion;
     Date dob;
 
-    @ManyToMany(mappedBy = "employees") // "courses" refers to the field name in Student
+    @ManyToMany(mappedBy = "employees") //
     private Set<Patient> patients = new HashSet<>();
 
     @ManyToMany

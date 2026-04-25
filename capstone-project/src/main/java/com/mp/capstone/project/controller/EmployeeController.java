@@ -23,7 +23,7 @@ public class EmployeeController {
     private static final Logger log = LoggerFactory.getLogger(EmployeeController.class);
 
     @PostMapping("{empId}")
-    public ResponseEntity<String> createPatient(@Valid @RequestBody Employee emp) {
+    public ResponseEntity<String> createEmployee(@Valid @RequestBody Employee emp) {
         log.info("Received request to create employee");
         empService.addEmployee(emp);
 
@@ -32,15 +32,22 @@ public class EmployeeController {
                 .body("created");
     }
 
+    @GetMapping("/records/{empId}")
+    public ResponseEntity<Set<Employee>> getEmployeRecords(@PathVariable String empId) {
+        log.info("Fetching records assigned to employee with id: {}", empId);
+        Employee emp = empService.getEmployee(empId);
+        return ResponseEntity.ok(emp.getRecords());
+    }
+
     @GetMapping("/{id}")
-    public ResponseEntity<Employee> getPatient(@PathVariable String id) {
+    public ResponseEntity<Employee> getEmploye(@PathVariable String id) {
         log.info("Fetching employee with id: {}", id);
         Employee emp = empService.getEmployee(id);
         return ResponseEntity.ok(emp);
     }
 
     @GetMapping
-    public ResponseEntity<List<Employee>> getAllPatients() {
+    public ResponseEntity<List<Employee>> getAllEmployes() {
         log.info("Fetching all employees");
         List<Employee> employees = empService.getAllEmployee();
         return ResponseEntity.ok(employees);

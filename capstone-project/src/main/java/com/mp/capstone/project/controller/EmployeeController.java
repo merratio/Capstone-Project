@@ -1,6 +1,7 @@
 package com.mp.capstone.project.controller;
 
 import com.mp.capstone.project.entity.Employee;
+import com.mp.capstone.project.entity.MedicalRecord;
 import com.mp.capstone.project.entity.Patient;
 import com.mp.capstone.project.service.EmployeeService;
 import jakarta.validation.Valid;
@@ -12,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/api/employees")
@@ -33,7 +35,7 @@ public class EmployeeController {
     }
 
     @GetMapping("/records/{empId}")
-    public ResponseEntity<Set<Employee>> getEmployeRecords(@PathVariable String empId) {
+    public ResponseEntity<Set<MedicalRecord>> getEmployeRecords(@PathVariable String empId) {
         log.info("Fetching records assigned to employee with id: {}", empId);
         Employee emp = empService.getEmployee(empId);
         return ResponseEntity.ok(emp.getRecords());

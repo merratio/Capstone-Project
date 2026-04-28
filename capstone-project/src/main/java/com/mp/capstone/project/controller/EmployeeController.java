@@ -1,8 +1,8 @@
 package com.mp.capstone.project.controller;
 
-import com.mp.capstone.project.entity.Employee;
-import com.mp.capstone.project.entity.MedicalRecord;
-import com.mp.capstone.project.entity.Patient;
+import com.mp.capstone.project.dto.request.EmployeeRequestDTO;
+import com.mp.capstone.project.dto.response.EmployeeResponseDTO;
+import com.mp.capstone.project.dto.response.MedicalRecordResponseDTO;
 import com.mp.capstone.project.service.EmployeeService;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
@@ -19,48 +19,43 @@ import java.util.Set;
 @RequestMapping("/api/employees")
 @CrossOrigin(origins="*")
 public class EmployeeController {
+
     @Autowired
     EmployeeService empService;
 
     private static final Logger log = LoggerFactory.getLogger(EmployeeController.class);
 
-    @PostMapping("{empId}")
-    public ResponseEntity<String> createEmployee(@Valid @RequestBody Employee emp) {
+    @PostMapping("")
+    public ResponseEntity<String> createEmployee(@Valid @RequestBody EmployeeRequestDTO dto) {
         log.info("Received request to create employee");
-        empService.addEmployee(emp);
-
-        return ResponseEntity
-                .status(HttpStatus.CREATED)
-                .body("created");
+        empService.addEmployee(dto);
+        return ResponseEntity.status(HttpStatus.CREATED).body("created");
     }
 
     @GetMapping("/records/{empId}")
-    public ResponseEntity<Set<MedicalRecord>> getEmployeRecords(@PathVariable String empId) {
+    public ResponseEntity<Set<MedicalRecordResponseDTO>> getEmployeeRecords(@PathVariable String empId) {
         log.info("Fetching records assigned to employee with id: {}", empId);
-        Employee emp = empService.getEmployee(empId);
-        return ResponseEntity.ok(emp.getRecords());
+        return ResponseEntity.ok(empService.getEmployeeRecords(empId));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Employee> getEmploye(@PathVariable String id) {
+    public ResponseEntity<EmployeeResponseDTO> getEmployee(@PathVariable String id) {
         log.info("Fetching employee with id: {}", id);
-        Employee emp = empService.getEmployee(id);
-        return ResponseEntity.ok(emp);
+        return ResponseEntity.ok(empService.getEmployeeDTO(id));
     }
 
     @GetMapping
-    public ResponseEntity<List<Employee>> getAllEmployes() {
+    public ResponseEntity<List<EmployeeResponseDTO>> getAllEmployees() {
         log.info("Fetching all employees");
-        List<Employee> employees = empService.getAllEmployee();
-        return ResponseEntity.ok(employees);
+        return ResponseEntity.ok(empService.getAllEmployeeDTO());
     }
 
     @PutMapping("/{empId}")
     public ResponseEntity<Void> updateEmployee(
             @PathVariable String empId,
-            @Valid @RequestBody Employee emp) {
+            @Valid @RequestBody EmployeeRequestDTO dto) {
         log.info("Updating employee with id: {}", empId);
-        empService.updateEmployee(empId, emp);
+        empService.updateEmployee(empId, dto);
         return ResponseEntity.noContent().build();
     }
 }

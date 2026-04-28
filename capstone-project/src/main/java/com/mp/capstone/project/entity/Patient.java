@@ -132,6 +132,14 @@ public class Patient {
         return getClass().hashCode();
     }
 
+    public Set<Employee> getEmployees() {
+        return employees;
+    }
+
+    public void setEmployees(Set<Employee> employees) {
+        this.employees = employees;
+    }
+
     public void addEmployee(Employee emp) {
         this.employees.add(emp);
         emp.getPatients().add(this); // Keeps both sides in sync

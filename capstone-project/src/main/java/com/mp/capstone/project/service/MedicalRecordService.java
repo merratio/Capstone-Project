@@ -13,7 +13,6 @@ import com.mp.capstone.project.util.HashUtil;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -22,21 +21,21 @@ import java.util.stream.Collectors;
 public class MedicalRecordService {
 
     private final MedicalRecordRepository repo;
-    private final BlockchainService blockchainService;
-    private final PatientRepository patientRepository;
-    private final MedicalRecordMapper medicalRecordMapper;
+    private final BlockchainService       blockchainService;
+    private final PatientRepository       patientRepository;
+    private final MedicalRecordMapper     medicalRecordMapper;
 
     public MedicalRecordService(MedicalRecordRepository repo,
                                 BlockchainService blockchainService,
                                 PatientRepository patientRepository,
                                 MedicalRecordMapper medicalRecordMapper) {
-        this.repo = repo;
-        this.blockchainService = blockchainService;
-        this.patientRepository = patientRepository;
+        this.repo               = repo;
+        this.blockchainService  = blockchainService;
+        this.patientRepository  = patientRepository;
         this.medicalRecordMapper = medicalRecordMapper;
     }
 
-    // ─── Create ────────────────────────────────────────────────────────────────
+    // ─── Create ───────────────────────────────────────────────────────────────
 
     @Transactional
     public String createMedicalRecord(MedicalRecordRequestDTO dto, String patId) {
@@ -63,7 +62,7 @@ public class MedicalRecordService {
         return recordId;
     }
 
-    // ─── Read ──────────────────────────────────────────────────────────────────
+    // ─── Read ─────────────────────────────────────────────────────────────────
 
     @Transactional(readOnly = true)
     public MedicalRecordResponseDTO getRecord(String id) {
@@ -89,36 +88,43 @@ public class MedicalRecordService {
         return records;
     }
 
-    // ─── Update ────────────────────────────────────────────────────────────────
+    // ─── Update ───────────────────────────────────────────────────────────────
 
+    /**
+     * Updates a record looked up by patient TRN.
+     * Used by admin-facing {@code MedicalRecordController}.
+     */
     @Transactional
     public void updatePatientRecord(String patTrn, MedicalRecordRequestDTO dto) {
         List<MedicalRecord> records = repo.findByPatientTrn(patTrn);
 
-        MedicalRecord updatedRecord = null;
-        for (MedicalRecord record : records) {
-            if (patTrn.equals(record.getPat().getTrn())) {
-                medicalRecordMapper.updateEntityFromDTO(dto, record);
-                updatedRecord = record;
-                break;
-            }
-        }
+        MedicalRecord updatedRecord = records.stream()
+                .filter(r -> patTrn.equals(r.getPat().getTrn()))
+                .findFirst()
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("No medical record found for patient: " + patTrn));
 
-        if (updatedRecord == null) {
-            throw new ResourceNotFoundException("No medical record found for patient: " + patTrn);
-        }
-
-        String newHash = HashUtil.generateHash(updatedRecord);
-        try {
-            blockchainService.updateHash(updatedRecord.getId(), newHash);
-        } catch (Exception e) {
-            throw new RuntimeException("Failed to update hash on blockchain: " + e.getMessage(), e);
-        }
-
-        repo.save(updatedRecord);
+        applyUpdateAndHash(updatedRecord, dto);
     }
 
-    // ─── Delete ────────────────────────────────────────────────────────────────
+    /**
+     * Updates a record looked up directly by its own ID.
+     * Called by {@link EmployeeService#updateAssignedRecord} after the assignment
+     * and permission checks have already passed.
+     *
+     * @param recordId the ID of the record to update
+     * @param dto      fields to apply
+     * @throws ResourceNotFoundException if no record with {@code recordId} exists
+     */
+    @Transactional
+    public void updateRecordById(String recordId, MedicalRecordRequestDTO dto) {
+        MedicalRecord record = repo.findById(recordId)
+                .orElseThrow(() -> new ResourceNotFoundException("Record not found: " + recordId));
+
+        applyUpdateAndHash(record, dto);
+    }
+
+    // ─── Delete ───────────────────────────────────────────────────────────────
 
     @Transactional
     public void deleteRecord(String id) {
@@ -133,11 +139,28 @@ public class MedicalRecordService {
         repo.deleteById(id);
     }
 
-    // ─── Internal Helpers ──────────────────────────────────────────────────────
+    // ─── Internal Helpers ─────────────────────────────────────────────────────
+
+    /**
+     * Applies DTO fields to a managed record, recomputes the hash,
+     * pushes it to the blockchain, and persists.
+     */
+    private void applyUpdateAndHash(MedicalRecord record, MedicalRecordRequestDTO dto) {
+        medicalRecordMapper.updateEntityFromDTO(dto, record);
+
+        String newHash = HashUtil.generateHash(record);
+        try {
+            blockchainService.updateHash(record.getId(), newHash);
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to update hash on blockchain: " + e.getMessage(), e);
+        }
+
+        repo.save(record);
+    }
 
     private void verifyIntegrity(MedicalRecord record) {
         try {
-            String dbHash = HashUtil.generateHash(record);
+            String dbHash    = HashUtil.generateHash(record);
             String chainHash = blockchainService.getHash(record.getId());
             if (!dbHash.equals(chainHash)) {
                 throw new DataIntegrityException(
@@ -148,7 +171,8 @@ public class MedicalRecordService {
             throw e;
         } catch (Exception e) {
             throw new DataIntegrityException(
-                    "Failed to verify integrity for record: " + record.getId() + " - " + e.getMessage(), e);
+                    "Failed to verify integrity for record: " + record.getId()
+                            + " - " + e.getMessage(), e);
         }
     }
 

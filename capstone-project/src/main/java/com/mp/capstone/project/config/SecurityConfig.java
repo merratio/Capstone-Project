@@ -73,21 +73,20 @@ public class SecurityConfig {
                 // ── Endpoint authorisation rules ──────────────────────────────────
                 .authorizeHttpRequests(auth -> auth
 
+                        // ── Auth endpoints — public, no token required ────────────────
+                        .requestMatchers(HttpMethod.POST, "/api/auth/login").permitAll()
+
                         // ── Employee endpoints ────────────────────────────────────────
                         // Create employee: ADMIN only
-                        //.requestMatchers(HttpMethod.POST,   "/api/employees").hasRole("ADMIN")
-                        // After
-                        //.requestMatchers(HttpMethod.POST, "/api/employees").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/api/employees").hasAnyRole("ADMIN", "DOCTOR", "NURSE", "RECEPTIONIST")
+                        .requestMatchers(HttpMethod.POST,   "/api/employees").hasRole("ADMIN")
                         // List all employees: ADMIN only
                         .requestMatchers(HttpMethod.GET,    "/api/employees").hasRole("ADMIN")
-
                         // Get single employee: ADMIN or any authenticated employee
                         // (employee-owns-self check is handled in service layer)
-                        //.requestMatchers(HttpMethod.GET,    "/api/employees/{id}").authenticated()
+                        .requestMatchers(HttpMethod.GET,    "/api/employees/{id}").authenticated()
                         // Update employee profile: ADMIN only
                         .requestMatchers(HttpMethod.PUT,    "/api/employees/{empId}").hasRole("ADMIN")
-                       // Delete employee: ADMIN only
+                        // Delete employee: ADMIN only
                         .requestMatchers(HttpMethod.DELETE, "/api/employees/{empId}").hasRole("ADMIN")
 
                         // ── Employee → Records endpoints ──────────────────────────────

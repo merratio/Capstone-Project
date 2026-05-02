@@ -3,19 +3,6 @@ package com.mp.capstone.project.config;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 
-/**
- * Binds all {@code auth0.*} properties from {@code application.properties}
- * into a single, injectable configuration bean.
- *
- * <p>Required properties:
- * <pre>
- * auth0.domain=your-tenant.auth0.com
- * auth0.client-id=YOUR_M2M_CLIENT_ID
- * auth0.client-secret=YOUR_M2M_CLIENT_SECRET
- * auth0.management-api-audience=https://your-tenant.auth0.com/api/v2/
- * auth0.connection=Username-Password-Authentication
- * </pre>
- */
 @Configuration
 @ConfigurationProperties(prefix = "auth0")
 public class Auth0Properties {
@@ -49,6 +36,27 @@ public class Auth0Properties {
      */
     private String connection = "Username-Password-Authentication";
 
+    /**
+     * The API Identifier (audience) set when creating the API in the Auth0 dashboard.
+     * Used in the Resource Owner Password grant so Auth0 issues a token scoped to this API.
+     * Must match {@code auth0.audience} in {@code application.properties}.
+     * Example: {@code https://capstone-api}
+     */
+    private String audience;
+
+    /**
+     * Client ID of the Regular Web App / Native application in Auth0 that has the
+     * Password grant type enabled. This is a DIFFERENT application from the M2M app
+     * used for the Management API — it represents the Capstone frontend/client.
+     */
+    private String spaClientId;
+
+    /**
+     * Client Secret of the Regular Web App / Native application.
+     * Store via environment variable: {@code AUTH0_SPA_CLIENT_SECRET}.
+     */
+    private String spaClientSecret;
+
     // ─── Getters & Setters ────────────────────────────────────────────────────
 
     public String getDomain() { return domain; }
@@ -67,4 +75,13 @@ public class Auth0Properties {
 
     public String getConnection() { return connection; }
     public void setConnection(String connection) { this.connection = connection; }
+
+    public String getAudience() { return audience; }
+    public void setAudience(String audience) { this.audience = audience; }
+
+    public String getSpaClientId() { return spaClientId; }
+    public void setSpaClientId(String spaClientId) { this.spaClientId = spaClientId; }
+
+    public String getSpaClientSecret() { return spaClientSecret; }
+    public void setSpaClientSecret(String spaClientSecret) { this.spaClientSecret = spaClientSecret; }
 }

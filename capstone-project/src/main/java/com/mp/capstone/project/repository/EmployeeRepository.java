@@ -6,8 +6,17 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
+
 @Repository
 public interface EmployeeRepository extends JpaRepository<Employee, String> {
+
+    /**
+     * Looks up an employee by their Auth0 user_id (e.g. {@code auth0|64f1...}).
+     * Used by {@link com.mp.capstone.project.service.Auth0LoginService} after login
+     * to resolve the local employee from the Auth0 subject claim in the JWT.
+     */
+    Optional<Employee> findByAuth0UserId(String auth0UserId);
 
     /**
      * Returns true if the given medical record is assigned to the given employee.

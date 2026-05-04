@@ -83,13 +83,14 @@ public class Auth0LoginService {
         String url = String.format(TOKEN_ENDPOINT, auth0Properties.getDomain());
 
         Map<String, String> body = Map.of(
-                "grant_type", "password",
-                "username",   email,
-                "password",   password,
-                "audience",   auth0Properties.getAudience(),
-                "scope",      "openid profile email",
-                "client_id",  auth0Properties.getSpaClientId(),
-                "client_secret", auth0Properties.getSpaClientSecret()
+                "grant_type",    "password",
+                "username",      email,
+                "password",      password,
+                "audience",      auth0Properties.getAudience(),
+                "scope",         "openid profile email",
+                "client_id",     auth0Properties.getSpaClientId(),
+                "client_secret", auth0Properties.getSpaClientSecret(),
+                "connection",    "Username-Password-Authentication"
         );
 
         HttpHeaders headers = new HttpHeaders();

@@ -78,6 +78,7 @@ public class SecurityConfig {
 
                         // ── Employee endpoints ────────────────────────────────────────
                         // Create employee: ADMIN only
+                        //
                         .requestMatchers(HttpMethod.POST,   "/api/employees").hasRole("ADMIN")
                         // List all employees: ADMIN only
                         .requestMatchers(HttpMethod.GET,    "/api/employees").hasRole("ADMIN")

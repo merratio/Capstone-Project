@@ -89,10 +89,10 @@ public class AuthController {
             int status,
             String message,
             List<String> details,
-            Instant timestamp
+            String timestamp          // ← CHANGED from Instant to String
     ) {
         public ErrorResponse(int status, String message, List<String> details) {
-            this(status, message, details, Instant.now());
+            this(status, message, details, Instant.now().toString());  // ← CHANGED
         }
     }
 }

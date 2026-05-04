@@ -7,16 +7,6 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
-/**
- * JPA entity representing a healthcare employee who is also a system user.
- *
- * <p>Each employee is registered in Auth0 on creation. The {@code auth0UserId}
- * field stores the Auth0-assigned {@code user_id} (e.g. {@code auth0|64f1a2b3...})
- * so the local record can always be correlated with the Auth0 identity.
- *
- * <p>{@code role} is stored as a string in the DB via {@link Auth0Role}
- * and drives both Auth0 role assignment and in-application permission checks.
- */
 @Entity
 @Table(name = "employees")
 public class Employee {
@@ -28,20 +18,15 @@ public class Employee {
     @Column(nullable = false)
     private String name;
 
-    /**
-     * Stored as the enum name string (e.g. "ADMIN", "DOCTOR").
-     * Drives Auth0 role assignment and in-app permission checks.
-     */
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
     private Auth0Role role;
 
-    /**
-     * The Auth0 user_id returned after registering this employee in Auth0.
-     * Unique per employee; nullable only until the Auth0 call completes.
-     */
     @Column(name = "auth0_user_id", unique = true)
     private String auth0UserId;
+
+    @Column(nullable = false)
+    private String password;             // ← NEW
 
     private String gender;
     private String religion;
@@ -68,16 +53,18 @@ public class Employee {
         this.name     = "";
         this.religion = "";
         this.role     = Auth0Role.RECEPTIONIST;
+        this.password = "";              // ← NEW
     }
 
     public Employee(String name, Auth0Role role, String gender,
-                    String religion, Date dob, String auth0UserId) {
+                    String religion, Date dob, String auth0UserId, String password) {
         this.name        = name;
         this.role        = role;
         this.gender      = gender;
         this.religion    = religion;
         this.dob         = dob;
         this.auth0UserId = auth0UserId;
+        this.password    = password;     // ← NEW
     }
 
     // ─── Getters & Setters ────────────────────────────────────────────────────
@@ -93,6 +80,9 @@ public class Employee {
 
     public String getAuth0UserId() { return auth0UserId; }
     public void setAuth0UserId(String auth0UserId) { this.auth0UserId = auth0UserId; }
+
+    public String getPassword() { return password; }       // ← NEW
+    public void setPassword(String password) { this.password = password; }  // ← NEW
 
     public String getGender() { return gender; }
     public void setGender(String gender) { this.gender = gender; }

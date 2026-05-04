@@ -63,6 +63,7 @@ public class EmployeeMapper {
         emp.setGender(dto.getGender());
         emp.setReligion(dto.getReligion());
         emp.setDob(dto.getDob());
+        emp.setPassword(dto.getPassword());
         return emp;
     }
 

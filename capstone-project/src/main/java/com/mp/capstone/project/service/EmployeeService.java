@@ -9,6 +9,7 @@ import com.mp.capstone.project.dto.response.EmployeeResponseDTO;
 import com.mp.capstone.project.dto.response.MedicalRecordResponseDTO;
 import com.mp.capstone.project.entity.Employee;
 import com.mp.capstone.project.entity.MedicalRecord;
+import com.mp.capstone.project.util.HashUtil;
 import com.mp.capstone.project.exception.ResourceNotFoundException;
 import com.mp.capstone.project.mapper.EmployeeMapper;
 import com.mp.capstone.project.mapper.MedicalRecordMapper;
@@ -49,6 +50,7 @@ public class EmployeeService {
     @Autowired EmployeeMapper         employeeMapper;
     @Autowired MedicalRecordMapper    medicalRecordMapper;
     @Autowired Auth0ManagementService auth0ManagementService;
+    @Autowired BlockchainService blockchainService;
 
     // ─── Create ───────────────────────────────────────────────────────────────
 

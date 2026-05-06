@@ -21,6 +21,7 @@ public class PatientService {
 
     @Autowired PatientRepository patRepo;
     @Autowired EmployeeRepository empRepo;
+    @Autowired EmployeeService empService;
     @Autowired MedicalRecordRepository medRepo;
     @Autowired PatientMapper patientMapper;
 
@@ -65,10 +66,7 @@ public class PatientService {
         patRepo.save(pat);
 
         // Automatically link all existing patient records to this employee
-        List<MedicalRecord> records = medRepo.findByPatientTrn(pat.getTrn());
-        for (MedicalRecord record : records) {
-            emp.addRecord(record);
-        }
-        empRepo.save(emp);
+
+        empService.assignPatientRecordsToEmployee(pat.getTrn(), emp.getId());
     }
 }

@@ -27,6 +27,7 @@ public class EmployeeService {
     @Autowired MedicalRecordService recordService;
     @Autowired EmployeeMapper employeeMapper;
     @Autowired MedicalRecordMapper medicalRecordMapper;
+    @Autowired BlockchainService blockchainService;
 
     // ─── Create ────────────────────────────────────────────────────────────────
 

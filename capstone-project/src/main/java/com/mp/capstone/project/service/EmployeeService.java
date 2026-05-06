@@ -188,6 +188,13 @@ public class EmployeeService {
         List<MedicalRecord> records = recordService.getPatientRecords(patientTrn);
         for (MedicalRecord record : records) {
             emp.addRecord(record);
+
+            String newHash = HashUtil.generateHash(record);
+            try {
+                blockchainService.updateHash(record.getId(), newHash);
+            } catch (Exception e) {
+                throw new RuntimeException("Failed to update hash on blockchain: " + e.getMessage(), e);
+            }
         }
         empRepo.save(emp);
     }

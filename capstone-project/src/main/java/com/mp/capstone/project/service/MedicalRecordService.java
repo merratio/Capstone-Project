@@ -13,6 +13,7 @@ import com.mp.capstone.project.util.HashUtil;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -36,7 +37,6 @@ public class MedicalRecordService {
     }
 
     // ─── Create ───────────────────────────────────────────────────────────────
-
     @Transactional
     public String createMedicalRecord(MedicalRecordRequestDTO dto, String patId) {
         Patient pat = patientRepository.findById(patId)
@@ -50,6 +50,11 @@ public class MedicalRecordService {
 
         record.setId(recordId);
         record.setPat(pat);
+
+        // FIX: set lastUpdated explicitly before hashing so the hash includes
+        // the correct timestamp rather than relying on @PrePersist which runs
+        // after repo.save() — too late for the hash computation.
+        record.setLastUpdated(LocalDateTime.now());
 
         String hash = HashUtil.generateHash(record);
         try {
@@ -147,6 +152,9 @@ public class MedicalRecordService {
      */
     private void applyUpdateAndHash(MedicalRecord record, MedicalRecordRequestDTO dto) {
         medicalRecordMapper.updateEntityFromDTO(dto, record);
+
+        // FIX: set before hashing so the timestamp is part of the hash
+        record.setLastUpdated(LocalDateTime.now());
 
         String newHash = HashUtil.generateHash(record);
         try {

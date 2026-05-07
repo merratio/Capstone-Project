@@ -118,7 +118,7 @@ public class EmployeeController {
      * Returns all medical records assigned to an employee.
      * Permission: ADMIN.
      */
-    @GetMapping("/{empId}/records")
+    @GetMapping("/records/{empId}")
     public ResponseEntity<Set<MedicalRecordResponseDTO>> getEmployeeRecords(
             @PathVariable String empId) {
         log.info("Fetching all records for employee: {}", empId);

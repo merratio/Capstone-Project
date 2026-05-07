@@ -1,23 +1,22 @@
 package com.mp.capstone.project.service;
 
-import com.mp.capstone.project.dto.request.Auth0UserRequestDTO;
 import com.mp.capstone.project.dto.request.EmployeeCreateRequestDTO;
 import com.mp.capstone.project.dto.request.EmployeeUpdateRequestDTO;
 import com.mp.capstone.project.dto.request.MedicalRecordRequestDTO;
+import com.mp.capstone.project.dto.request.Auth0UserRequestDTO;
 import com.mp.capstone.project.dto.response.Auth0UserResponseDTO;
 import com.mp.capstone.project.dto.response.EmployeeResponseDTO;
 import com.mp.capstone.project.dto.response.MedicalRecordResponseDTO;
 import com.mp.capstone.project.entity.Employee;
 import com.mp.capstone.project.entity.MedicalRecord;
-import com.mp.capstone.project.util.HashUtil;
 import com.mp.capstone.project.exception.ResourceNotFoundException;
 import com.mp.capstone.project.mapper.EmployeeMapper;
 import com.mp.capstone.project.mapper.MedicalRecordMapper;
 import com.mp.capstone.project.repository.EmployeeRepository;
 import com.mp.capstone.project.repository.MedicalRecordRepository;
 import com.mp.capstone.project.repository.PatientRepository;
-import jakarta.transaction.Transactional;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -43,14 +42,32 @@ import java.util.stream.Collectors;
 @Service
 public class EmployeeService {
 
-    @Autowired EmployeeRepository     empRepo;
-    @Autowired PatientRepository      patRepo;
-    @Autowired MedicalRecordRepository medRepo;
-    @Autowired MedicalRecordService   recordService;
-    @Autowired EmployeeMapper         employeeMapper;
-    @Autowired MedicalRecordMapper    medicalRecordMapper;
-    @Autowired Auth0ManagementService auth0ManagementService;
-    @Autowired BlockchainService blockchainService;
+    private final EmployeeRepository      empRepo;
+    private final PatientRepository       patRepo;
+    private final MedicalRecordRepository medRepo;
+    private final MedicalRecordService    recordService;
+    private final EmployeeMapper          employeeMapper;
+    private final MedicalRecordMapper     medicalRecordMapper;
+    private final Auth0ManagementService  auth0ManagementService;
+    private final BlockchainService       blockchainService;
+
+    public EmployeeService(EmployeeRepository empRepo,
+                           PatientRepository patRepo,
+                           MedicalRecordRepository medRepo,
+                           MedicalRecordService recordService,
+                           EmployeeMapper employeeMapper,
+                           MedicalRecordMapper medicalRecordMapper,
+                           Auth0ManagementService auth0ManagementService,
+                           BlockchainService blockchainService) {
+        this.empRepo                = empRepo;
+        this.patRepo                = patRepo;
+        this.medRepo                = medRepo;
+        this.recordService          = recordService;
+        this.employeeMapper         = employeeMapper;
+        this.medicalRecordMapper    = medicalRecordMapper;
+        this.auth0ManagementService = auth0ManagementService;
+        this.blockchainService      = blockchainService;
+    }
 
     // ─── Create ───────────────────────────────────────────────────────────────
 
@@ -82,19 +99,19 @@ public class EmployeeService {
 
     // ─── Read ─────────────────────────────────────────────────────────────────
 
-    @Transactional
+    @Transactional(readOnly = true)
     public EmployeeResponseDTO getEmployeeDTO(String id) {
         return employeeMapper.toResponseDTO(getEmployee(id));
     }
 
     /** Internal helper — returns the managed entity for relationship management. */
-    @Transactional
+    @Transactional(readOnly = true)
     public Employee getEmployee(String id) {
         return empRepo.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Employee not found: " + id));
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public List<EmployeeResponseDTO> getAllEmployeeDTO() {
         return empRepo.findAll()
                 .stream()
@@ -102,13 +119,18 @@ public class EmployeeService {
                 .collect(Collectors.toList());
     }
 
-    /** Returns all records assigned to an employee. Admin-facing. */
-    @Transactional
+    /**
+     * Returns all records assigned to an employee with blockchain integrity
+     * verified for each one before returning.
+     *
+     * @throws DataIntegrityException if any assigned record fails its integrity check
+     */
+    @Transactional(readOnly = true)
     public Set<MedicalRecordResponseDTO> getEmployeeRecords(String empId) {
         Employee emp = getEmployee(empId);
         return emp.getRecords()
                 .stream()
-                .map(medicalRecordMapper::toResponseDTO)
+                .map(record -> recordService.getRecord(record.getId())) // integrity verified
                 .collect(Collectors.toSet());
     }
 
@@ -117,8 +139,9 @@ public class EmployeeService {
      * Blockchain integrity is verified before returning.
      *
      * @throws ResourceNotFoundException if the record is not assigned to this employee
+     * @throws DataIntegrityException    if the record fails its integrity check
      */
-    @Transactional
+    @Transactional(readOnly = true)
     public MedicalRecordResponseDTO getAssignedRecord(String empId, String recordId) {
         requireRecordAssigned(empId, recordId);
         return recordService.getRecord(recordId);
@@ -138,7 +161,7 @@ public class EmployeeService {
      * Updates a medical record assigned to this employee.
      * Only ADMIN, DOCTOR, and NURSE are permitted — RECEPTIONIST receives 403.
      *
-     * @throws SecurityException         if the employee's role is read-only
+     * @throws AccessDeniedException     if the employee's role is read-only
      * @throws ResourceNotFoundException if the record is not assigned to this employee
      */
     @Transactional
@@ -147,7 +170,7 @@ public class EmployeeService {
         Employee emp = getEmployee(empId);
 
         if (!emp.getRole().canEditRecords()) {
-            throw new SecurityException(
+            throw new AccessDeniedException(
                     "Role " + emp.getRole() + " does not have permission to edit records.");
         }
 

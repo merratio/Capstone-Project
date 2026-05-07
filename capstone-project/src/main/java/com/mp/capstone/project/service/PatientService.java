@@ -3,11 +3,14 @@ package com.mp.capstone.project.service;
 import com.mp.capstone.project.dto.request.PatientRequestDTO;
 import com.mp.capstone.project.dto.response.PatientResponseDTO;
 import com.mp.capstone.project.entity.Employee;
+import com.mp.capstone.project.entity.MedicalRecord;
 import com.mp.capstone.project.entity.Patient;
 import com.mp.capstone.project.exception.ResourceNotFoundException;
 import com.mp.capstone.project.mapper.PatientMapper;
 import com.mp.capstone.project.repository.EmployeeRepository;
+import com.mp.capstone.project.repository.MedicalRecordRepository;
 import com.mp.capstone.project.repository.PatientRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.stereotype.Service;
 
@@ -16,6 +19,8 @@ import java.util.stream.Collectors;
 
 @Service
 public class PatientService {
+    @Autowired
+    private MedicalRecordRepository medRepo;
 
     private final PatientRepository  patRepo;
     private final EmployeeRepository empRepo;
@@ -78,15 +83,17 @@ public class PatientService {
      */
     @Transactional
     public void assignEmployee(String patientId, String empId) {
-        Patient pat = patRepo.findById(patientId)
-                .orElseThrow(() -> new ResourceNotFoundException("Patient not found: " + patientId));
-        Employee emp = empRepo.findById(empId)
-                .orElseThrow(() -> new ResourceNotFoundException("Employee not found: " + empId));
+        Patient pat = patRepo.findById(patientId).orElseThrow();
+        Employee emp = empRepo.findById(empId).orElseThrow();
 
         pat.addEmployee(emp);
         patRepo.save(pat);
 
-        // Delegate record-linking to EmployeeService to avoid duplicating logic
-        empService.assignPatientRecordsToEmployee(patientId, empId);
+        // Automatically link all existing patient records to this employee
+        List<MedicalRecord> records = medRepo.findByPatientTrn(pat.getTrn());
+        for (MedicalRecord record : records) {
+            emp.addRecord(record);
+        }
+        empRepo.save(emp);
     }
 }

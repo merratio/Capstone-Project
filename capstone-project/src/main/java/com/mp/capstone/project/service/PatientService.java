@@ -66,7 +66,10 @@ public class PatientService {
         patRepo.save(pat);
 
         // Automatically link all existing patient records to this employee
-
-        empService.assignPatientRecordsToEmployee(pat.getTrn(), emp.getId());
+        List<MedicalRecord> records = medRepo.findByPatientTrn(pat.getTrn());
+        for (MedicalRecord record : records) {
+            emp.addRecord(record);
+        }
+        empRepo.save(emp);
     }
 }

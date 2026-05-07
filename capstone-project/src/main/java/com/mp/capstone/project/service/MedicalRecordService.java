@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -61,10 +62,10 @@ public class MedicalRecordService {
         record.setId(recordId);
         record.setPat(pat);
 
-        // Set lastUpdated explicitly before hashing so the hash includes the
-        // correct timestamp rather than relying on @PrePersist which runs after
-        // repo.save() — too late for the hash computation.
-        record.setLastUpdated(LocalDateTime.now());
+        // Truncate to millis so the value stored in the DB and the value baked
+        // into the hash are always identical — nanoseconds are stripped before
+        // they can cause a precision mismatch on read-back
+        record.setLastUpdated(LocalDateTime.now().truncatedTo(ChronoUnit.MILLIS));
 
         String hash = HashUtil.generateHash(record);
         try {
@@ -186,8 +187,8 @@ public class MedicalRecordService {
     private void applyUpdateAndHash(MedicalRecord record, MedicalRecordRequestDTO dto) {
         medicalRecordMapper.updateEntityFromDTO(dto, record);
 
-        // Set before hashing so the timestamp is part of the hash
-        record.setLastUpdated(LocalDateTime.now());
+        // Truncate to millis — same reasoning as createMedicalRecord
+        record.setLastUpdated(LocalDateTime.now().truncatedTo(ChronoUnit.MILLIS));
 
         String newHash = HashUtil.generateHash(record);
         try {

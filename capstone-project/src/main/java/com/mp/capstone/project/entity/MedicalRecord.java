@@ -1,8 +1,8 @@
 package com.mp.capstone.project.entity;
 
 import jakarta.persistence.*;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -20,48 +20,46 @@ public class MedicalRecord {
     @Column(nullable = false)
     private String status;
 
+    // Changed from java.util.Date to LocalDate — timezone-neutral and produces
+    // a stable, consistent toString() output (ISO-8601: "2026-05-07")
     @Column(nullable = false)
-    private Date diagnosisDate;
+    private LocalDate diagnosisDate;
 
     @Column(nullable = false)
     private Boolean hereditary;
 
-    @ManyToOne // Defines the relationship
-    @JoinColumn(name = "patient_id") // Points to the foreign key column
+    @ManyToOne
+    @JoinColumn(name = "patient_id")
     private Patient patient;
 
+    // Precision = 3 locks the DB column to milliseconds, preventing truncation
+    // mismatch between the hashed value and what gets persisted and read back
     @Column(nullable = false)
+    @Temporal(TemporalType.TIMESTAMP)
     private LocalDateTime lastUpdated;
 
-    @ManyToMany(mappedBy = "records") // "courses" refers to the field name in Student
-    private Set<Employee> employees = new HashSet<>();
+    // No-arg constructor kept clean — no field defaults that could interfere
+    // with JPA hydration. Service layer is responsible for setting all values.
+    public MedicalRecord() {}
 
-    public MedicalRecord() {
-        this.conditionName = "";
-        this.diagnosisDate = new Date();
-        this.hereditary = false;
-        this.id = "";
-        this.lastUpdated = LocalDateTime.now();
-        this.patient = new Patient();
-        this.status = "";
-    }
-
-    public MedicalRecord(String conditionName, Date diagnosisDate, Boolean hereditary, String id, LocalDateTime lastUpdated, String status) {
+    public MedicalRecord(String conditionName, LocalDate diagnosisDate, Boolean hereditary,
+                         String id, LocalDateTime lastUpdated, String status) {
         this.conditionName = conditionName;
         this.diagnosisDate = diagnosisDate;
-        this.hereditary = hereditary;
-        this.id = id;
-        this.lastUpdated = lastUpdated;
-        this.status = status;
+        this.hereditary    = hereditary;
+        this.id            = id;
+        this.lastUpdated   = lastUpdated;
+        this.status        = status;
     }
 
-    public MedicalRecord(String conditionName, Date diagnosisDate, Boolean hereditary, LocalDateTime lastUpdated, Patient pat, String status) {
+    public MedicalRecord(String conditionName, LocalDate diagnosisDate, Boolean hereditary,
+                         LocalDateTime lastUpdated, Patient pat, String status) {
         this.conditionName = conditionName;
         this.diagnosisDate = diagnosisDate;
-        this.hereditary = hereditary;
-        this.lastUpdated = lastUpdated;
-        this.patient = pat;
-        this.status = status;
+        this.hereditary    = hereditary;
+        this.lastUpdated   = lastUpdated;
+        this.patient       = pat;
+        this.status        = status;
     }
 
     public Set<Employee> getEmployees() {
@@ -76,11 +74,11 @@ public class MedicalRecord {
         this.conditionName = conditionName;
     }
 
-    public Date getDiagnosisDate() {
+    public LocalDate getDiagnosisDate() {
         return diagnosisDate;
     }
 
-    public void setDiagnosisDate(Date diagnosisDate) {
+    public void setDiagnosisDate(LocalDate diagnosisDate) {
         this.diagnosisDate = diagnosisDate;
     }
 
@@ -123,4 +121,7 @@ public class MedicalRecord {
     public void setStatus(String status) {
         this.status = status;
     }
+
+    @ManyToMany(mappedBy = "records")
+    private Set<Employee> employees = new HashSet<>();
 }

@@ -3,7 +3,7 @@ package com.mp.capstone.project.dto.request;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 public class MedicalRecordRequestDTO {
 
@@ -17,7 +17,7 @@ public class MedicalRecordRequestDTO {
     private String status;
 
     @NotNull(message = "Diagnosis date must not be null")
-    private Date diagnosisDate;
+    private LocalDate diagnosisDate;
 
     @NotNull(message = "Hereditary flag must not be null")
     private Boolean hereditary;
@@ -33,8 +33,8 @@ public class MedicalRecordRequestDTO {
     public String getStatus() { return status; }
     public void setStatus(String status) { this.status = status; }
 
-    public Date getDiagnosisDate() { return diagnosisDate; }
-    public void setDiagnosisDate(Date diagnosisDate) { this.diagnosisDate = diagnosisDate; }
+    public LocalDate getDiagnosisDate() { return diagnosisDate; }
+    public void setDiagnosisDate(LocalDate diagnosisDate) { this.diagnosisDate = diagnosisDate; }
 
     public Boolean getHereditary() { return hereditary; }
     public void setHereditary(Boolean hereditary) { this.hereditary = hereditary; }

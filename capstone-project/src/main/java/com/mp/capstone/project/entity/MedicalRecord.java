@@ -32,10 +32,11 @@ public class MedicalRecord {
     @JoinColumn(name = "patient_id")
     private Patient patient;
 
-    // Precision = 3 locks the DB column to milliseconds, preventing truncation
-    // mismatch between the hashed value and what gets persisted and read back
+    // LocalDateTime is mapped natively by JPA/Hibernate as a TIMESTAMP column.
+    // @Temporal must NOT be used here — it only applies to java.util.Date /
+    // java.util.Calendar fields and causes a ClassNotFoundException at startup
+    // when placed on a java.time type.
     @Column(nullable = false)
-    @Temporal(TemporalType.TIMESTAMP)
     private LocalDateTime lastUpdated;
 
     // No-arg constructor kept clean — no field defaults that could interfere
